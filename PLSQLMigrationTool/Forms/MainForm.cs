@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using PLSQLMigrationTool.Business;
 using PLSQLMigrationTool.Data;
 using PLSQLMigrationTool.Models;
+using System.Text.RegularExpressions; // <--- ADICIONADO
 
 namespace PLSQLMigrationTool.Forms
 {
@@ -27,9 +28,55 @@ namespace PLSQLMigrationTool.Forms
             _connectionManager = new OracleConnectionManager();
             UpdateConnectionStatus();
             UpdateConnectionString(); // Inicializa a string de conexão
+            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
+
+            // Garante que a alteração manual nos campos atualize a string
+            txtHost.TextChanged += (s, e) => UpdateConnectionString();
+            txtPort.TextChanged += (s, e) => UpdateConnectionString();
+            txtServiceName.TextChanged += (s, e) => UpdateConnectionString();
+            txtUserId.TextChanged += (s, e) => UpdateConnectionString();
+            txtPassword.TextChanged += (s, e) => UpdateConnectionString();
         }
 
         #region Connection Tab
+
+        // --- NOVA LÓGICA DO BOTÃO COLAR STRING ---
+        private void btnPasteString_Click(object sender, EventArgs e)
+        {
+            if (Clipboard.ContainsText())
+            {
+                string textoCopiado = Clipboard.GetText();
+                ImportarStringConexao(textoCopiado);
+            }
+        }
+
+        private void ImportarStringConexao(string rawString)
+        {
+            // Regex para extrair: Usuario/Senha@//Host:Porta/Servico
+            string pattern = @"^(?<user>[^/]+)/(?<pass>[^@]+)@(?://)?(?<host>[^:/]+):(?<port>\d+)/(?<service>.+)$";
+
+            var match = Regex.Match(rawString.Trim(), pattern);
+
+            if (match.Success)
+            {
+                // Preenche os campos individuais
+                txtUserId.Text = match.Groups["user"].Value;
+                txtPassword.Text = match.Groups["pass"].Value;
+                txtHost.Text = match.Groups["host"].Value;
+                txtPort.Text = match.Groups["port"].Value;
+                txtServiceName.Text = match.Groups["service"].Value;
+
+                // Força a atualização da string de conexão visual
+                UpdateConnectionString();
+
+                MessageBox.Show("Dados colados e preenchidos com sucesso!", "Importação", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("O formato da string na área de transferência não é válido.\n\nFormato esperado: Usuario/Senha@//Host:Porta/Servico", "Erro de Formato", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+        // ------------------------------------------
 
         private string BuildConnectionString()
         {
@@ -40,7 +87,7 @@ namespace PLSQLMigrationTool.Forms
             string password = txtPassword.Text;
 
             // Formato padrão para ODP.NET Managed Driver
-            string connectionString = 
+            string connectionString =
                 $"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={host})(PORT={port}))(CONNECT_DATA=(SERVICE_NAME={serviceName})));" +
                 $"User Id={userId};Password={password};";
 
@@ -59,23 +106,23 @@ namespace PLSQLMigrationTool.Forms
                 UpdateConnectionString();
                 SetStatus("Testando conexão...");
                 _connectionManager.ConnectionString = txtConnectionString.Text.Trim();
-                
+
                 if (_connectionManager.TestConnection())
                 {
-                    MessageBox.Show("Conexão testada com sucesso!", "Sucesso", 
+                    MessageBox.Show("Conexão testada com sucesso!", "Sucesso",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     SetStatus("Conexão testada com sucesso");
                 }
                 else
                 {
-                    MessageBox.Show("Falha ao testar conexão. Verifique os parâmetros e o status do banco.", "Erro", 
+                    MessageBox.Show("Falha ao testar conexão. Verifique os parâmetros e o status do banco.", "Erro",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     SetStatus("Falha ao testar conexão");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao testar conexão:\n{ex.Message}", "Erro", 
+                MessageBox.Show($"Erro ao testar conexão:\n{ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetStatus("Erro ao testar conexão");
             }
@@ -99,13 +146,13 @@ namespace PLSQLMigrationTool.Forms
                 _exportManager = new ExportManager(_queryExecutor, _metadataRepository);
 
                 UpdateConnectionStatus();
-                MessageBox.Show("Conectado com sucesso!", "Sucesso", 
+                MessageBox.Show("Conectado com sucesso!", "Sucesso",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 SetStatus("Conectado ao banco de dados");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao conectar:\n{ex.Message}", "Erro", 
+                MessageBox.Show($"Erro ao conectar:\n{ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetStatus("Erro ao conectar");
             }
@@ -117,13 +164,13 @@ namespace PLSQLMigrationTool.Forms
             {
                 _connectionManager.Disconnect();
                 UpdateConnectionStatus();
-                MessageBox.Show("Desconectado com sucesso!", "Sucesso", 
+                MessageBox.Show("Desconectado com sucesso!", "Sucesso",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 SetStatus("Desconectado");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao desconectar:\n{ex.Message}", "Erro", 
+                MessageBox.Show($"Erro ao desconectar:\n{ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -154,7 +201,7 @@ namespace PLSQLMigrationTool.Forms
             {
                 SetStatus("Carregando triggers...");
                 _allTriggers = _triggerManager.GetAllTriggers();
-                
+
                 checkedListTriggers.Items.Clear();
                 foreach (TriggerInfo trigger in _allTriggers)
                 {
@@ -165,7 +212,7 @@ namespace PLSQLMigrationTool.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar triggers:\n{ex.Message}", "Erro", 
+                MessageBox.Show($"Erro ao carregar triggers:\n{ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetStatus("Erro ao carregar triggers");
             }
@@ -177,7 +224,7 @@ namespace PLSQLMigrationTool.Forms
 
             if (checkedListTriggers.CheckedItems.Count == 0)
             {
-                MessageBox.Show("Selecione pelo menos uma trigger.", "Aviso", 
+                MessageBox.Show("Selecione pelo menos uma trigger.", "Aviso",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -192,23 +239,23 @@ namespace PLSQLMigrationTool.Forms
             {
                 SetStatus("Desabilitando triggers...");
                 List<string> triggerNames = new List<string>();
-                
+
                 foreach (TriggerInfo trigger in checkedListTriggers.CheckedItems)
                 {
                     triggerNames.Add(trigger.TriggerName);
                 }
 
                 int count = _triggerManager.DisableTriggers(triggerNames);
-                
-                MessageBox.Show($"{count} trigger(s) desabilitada(s) com sucesso!", "Sucesso", 
+
+                MessageBox.Show($"{count} trigger(s) desabilitada(s) com sucesso!", "Sucesso",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 SetStatus($"{count} triggers desabilitadas");
-                
+
                 btnRefreshTriggers_Click(sender, e);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao desabilitar triggers:\n{ex.Message}", "Erro", 
+                MessageBox.Show($"Erro ao desabilitar triggers:\n{ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetStatus("Erro ao desabilitar triggers");
             }
@@ -220,7 +267,7 @@ namespace PLSQLMigrationTool.Forms
 
             if (checkedListTriggers.CheckedItems.Count == 0)
             {
-                MessageBox.Show("Selecione pelo menos uma trigger.", "Aviso", 
+                MessageBox.Show("Selecione pelo menos uma trigger.", "Aviso",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -229,23 +276,23 @@ namespace PLSQLMigrationTool.Forms
             {
                 SetStatus("Habilitando triggers...");
                 List<string> triggerNames = new List<string>();
-                
+
                 foreach (TriggerInfo trigger in checkedListTriggers.CheckedItems)
                 {
                     triggerNames.Add(trigger.TriggerName);
                 }
 
                 int count = _triggerManager.EnableTriggers(triggerNames);
-                
-                MessageBox.Show($"{count} trigger(s) habilitada(s) com sucesso!", "Sucesso", 
+
+                MessageBox.Show($"{count} trigger(s) habilitada(s) com sucesso!", "Sucesso",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 SetStatus($"{count} triggers habilitadas");
-                
+
                 btnRefreshTriggers_Click(sender, e);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao habilitar triggers:\n{ex.Message}", "Erro", 
+                MessageBox.Show($"Erro ao habilitar triggers:\n{ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetStatus("Erro ao habilitar triggers");
             }
@@ -279,7 +326,7 @@ namespace PLSQLMigrationTool.Forms
             {
                 SetStatus("Carregando constraints...");
                 _allConstraints = _constraintManager.GetAllConstraints();
-                
+
                 checkedListConstraints.Items.Clear();
                 foreach (ConstraintInfo constraint in _allConstraints)
                 {
@@ -290,7 +337,7 @@ namespace PLSQLMigrationTool.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar constraints:\n{ex.Message}", "Erro", 
+                MessageBox.Show($"Erro ao carregar constraints:\n{ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetStatus("Erro ao carregar constraints");
             }
@@ -302,7 +349,7 @@ namespace PLSQLMigrationTool.Forms
 
             if (checkedListConstraints.CheckedItems.Count == 0)
             {
-                MessageBox.Show("Selecione pelo menos uma constraint.", "Aviso", 
+                MessageBox.Show("Selecione pelo menos uma constraint.", "Aviso",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -317,23 +364,23 @@ namespace PLSQLMigrationTool.Forms
             {
                 SetStatus("Desabilitando constraints...");
                 List<ConstraintInfo> constraints = new List<ConstraintInfo>();
-                
+
                 foreach (ConstraintInfo constraint in checkedListConstraints.CheckedItems)
                 {
                     constraints.Add(constraint);
                 }
 
                 int count = _constraintManager.DisableConstraints(constraints);
-                
-                MessageBox.Show($"{count} constraint(s) desabilitada(s) com sucesso!", "Sucesso", 
+
+                MessageBox.Show($"{count} constraint(s) desabilitada(s) com sucesso!", "Sucesso",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 SetStatus($"{count} constraints desabilitadas");
-                
+
                 btnRefreshConstraints_Click(sender, e);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao desabilitar constraints:\n{ex.Message}", "Erro", 
+                MessageBox.Show($"Erro ao desabilitar constraints:\n{ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetStatus("Erro ao desabilitar constraints");
             }
@@ -345,7 +392,7 @@ namespace PLSQLMigrationTool.Forms
 
             if (checkedListConstraints.CheckedItems.Count == 0)
             {
-                MessageBox.Show("Selecione pelo menos uma constraint.", "Aviso", 
+                MessageBox.Show("Selecione pelo menos uma constraint.", "Aviso",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -354,23 +401,23 @@ namespace PLSQLMigrationTool.Forms
             {
                 SetStatus("Habilitando constraints...");
                 List<ConstraintInfo> constraints = new List<ConstraintInfo>();
-                
+
                 foreach (ConstraintInfo constraint in checkedListConstraints.CheckedItems)
                 {
                     constraints.Add(constraint);
                 }
 
                 int count = _constraintManager.EnableConstraints(constraints);
-                
-                MessageBox.Show($"{count} constraint(s) habilitada(s) com sucesso!", "Sucesso", 
+
+                MessageBox.Show($"{count} constraint(s) habilitada(s) com sucesso!", "Sucesso",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 SetStatus($"{count} constraints habilitadas");
-                
+
                 btnRefreshConstraints_Click(sender, e);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao habilitar constraints:\n{ex.Message}", "Erro", 
+                MessageBox.Show($"Erro ao habilitar constraints:\n{ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetStatus("Erro ao habilitar constraints");
             }
@@ -404,7 +451,7 @@ namespace PLSQLMigrationTool.Forms
             {
                 SetStatus("Carregando tabelas...");
                 _allTables = _tableManager.GetAllTables();
-                
+
                 checkedListTables.Items.Clear();
                 foreach (TableInfo table in _allTables)
                 {
@@ -415,7 +462,7 @@ namespace PLSQLMigrationTool.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar tabelas:\n{ex.Message}", "Erro", 
+                MessageBox.Show($"Erro ao carregar tabelas:\n{ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetStatus("Erro ao carregar tabelas");
             }
@@ -427,7 +474,7 @@ namespace PLSQLMigrationTool.Forms
 
             if (checkedListTables.CheckedItems.Count == 0)
             {
-                MessageBox.Show("Selecione pelo menos uma tabela.", "Aviso", 
+                MessageBox.Show("Selecione pelo menos uma tabela.", "Aviso",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -443,23 +490,23 @@ namespace PLSQLMigrationTool.Forms
             {
                 SetStatus("Truncando tabelas...");
                 List<string> tableNames = new List<string>();
-                
+
                 foreach (TableInfo table in checkedListTables.CheckedItems)
                 {
                     tableNames.Add(table.TableName);
                 }
 
                 int count = _tableManager.TruncateTables(tableNames);
-                
-                MessageBox.Show($"{count} tabela(s) truncada(s) com sucesso!", "Sucesso", 
+
+                MessageBox.Show($"{count} tabela(s) truncada(s) com sucesso!", "Sucesso",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 SetStatus($"{count} tabelas truncadas");
-                
+
                 btnRefreshTables_Click(sender, e);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao truncar tabelas:\n{ex.Message}", "Erro", 
+                MessageBox.Show($"Erro ao truncar tabelas:\n{ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetStatus("Erro ao truncar tabelas");
             }
@@ -483,6 +530,118 @@ namespace PLSQLMigrationTool.Forms
 
         #endregion
 
+        #region Enable Constraints Tab
+
+        private void btnRefreshEnableConstraints_Click(object sender, EventArgs e)
+        {
+            if (!CheckConnection()) return;
+
+            try
+            {
+                SetStatus("Carregando constraints desabilitadas...");
+                // Re-carrega todas as constraints para garantir o status atualizado
+                _allConstraints = _constraintManager.GetAllConstraints();
+
+                // Filtra apenas as constraints desabilitadas
+                List<ConstraintInfo> disabledConstraints = _allConstraints.FindAll(c => !c.IsEnabled).FindAll(c => c.ConstraintType != "R");
+
+                // Aplica o filtro de tipo de constraint
+                List<ConstraintInfo> filteredConstraints = ApplyConstraintFilter(disabledConstraints);
+
+                checkedListEnableConstraints.Items.Clear();
+                foreach (ConstraintInfo constraint in filteredConstraints)
+                {
+                    checkedListEnableConstraints.Items.Add(constraint);
+                }
+
+                SetStatus($"{checkedListEnableConstraints.Items.Count} constraints desabilitadas carregadas");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao carregar constraints desabilitadas:\n{ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SetStatus("Erro ao carregar constraints desabilitadas");
+            }
+        }
+
+        private List<ConstraintInfo> ApplyConstraintFilter(List<ConstraintInfo> constraints)
+        {
+            List<string> allowedTypes = new List<string>();
+            if (chkForeign.Checked) allowedTypes.Add("R");
+            if (chkPrimary.Checked) allowedTypes.Add("P");
+            if (chkUnique.Checked) allowedTypes.Add("U");
+            if (chkCheck.Checked) allowedTypes.Add("C");
+
+            return constraints.FindAll(c => allowedTypes.Contains(c.ConstraintType));
+        }
+
+        private void chkFilter_CheckedChanged(object sender, EventArgs e)
+        {
+            // Recarrega a lista ao alterar o filtro
+            btnRefreshEnableConstraints_Click(sender, e);
+        }
+
+        private void btnEnableSelectedConstraints_Click(object sender, EventArgs e)
+        {
+            if (!CheckConnection()) return;
+
+            if (checkedListEnableConstraints.CheckedItems.Count == 0)
+            {
+                MessageBox.Show("Selecione pelo menos uma constraint para habilitar.", "Aviso",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DialogResult result = MessageBox.Show(
+                $"Habilitar {checkedListEnableConstraints.CheckedItems.Count} constraint(s) selecionada(s)?",
+                "Confirmação", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes) return;
+
+            try
+            {
+                SetStatus("Habilitando constraints...");
+                List<ConstraintInfo> constraintsToEnable = new List<ConstraintInfo>();
+
+                foreach (ConstraintInfo constraint in checkedListEnableConstraints.CheckedItems)
+                {
+                    constraintsToEnable.Add(constraint);
+                }
+
+                int count = _constraintManager.EnableConstraints(constraintsToEnable);
+
+                MessageBox.Show($"{count} constraint(s) habilitada(s) com sucesso!", "Sucesso",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                SetStatus($"{count} constraints habilitadas");
+
+                btnRefreshEnableConstraints_Click(sender, e);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao habilitar constraints:\n{ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SetStatus("Erro ao habilitar constraints");
+            }
+        }
+
+        private void btnSelectAllEnableConstraints_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < checkedListEnableConstraints.Items.Count; i++)
+            {
+                checkedListEnableConstraints.SetItemChecked(i, true);
+            }
+        }
+
+        private void btnDeselectAllEnableConstraints_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < checkedListEnableConstraints.Items.Count; i++)
+            {
+                checkedListEnableConstraints.SetItemChecked(i, false);
+            }
+        }
+
+        #endregion
+
         #region Export Tab
 
         private void btnRefreshExportTables_Click(object sender, EventArgs e)
@@ -493,7 +652,7 @@ namespace PLSQLMigrationTool.Forms
             {
                 SetStatus("Carregando tabelas...");
                 _allTables = _tableManager.GetAllTables();
-                
+
                 checkedListExportTables.Items.Clear();
                 foreach (TableInfo table in _allTables)
                 {
@@ -504,9 +663,17 @@ namespace PLSQLMigrationTool.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar tabelas:\n{ex.Message}", "Erro", 
+                MessageBox.Show($"Erro ao carregar tabelas:\n{ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetStatus("Erro ao carregar tabelas");
+            }
+        }
+
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl.SelectedTab != null && tabControl.SelectedTab.Text == "Habilitar Constraints")
+            {
+                btnRefreshEnableConstraints_Click(sender, e);
             }
         }
 
@@ -516,7 +683,7 @@ namespace PLSQLMigrationTool.Forms
 
             if (checkedListExportTables.CheckedItems.Count == 0)
             {
-                MessageBox.Show("Selecione pelo menos uma tabela.", "Aviso", 
+                MessageBox.Show("Selecione pelo menos uma tabela.", "Aviso",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -533,7 +700,7 @@ namespace PLSQLMigrationTool.Forms
             {
                 SetStatus("Exportando DDL...");
                 List<string> tableNames = new List<string>();
-                
+
                 foreach (TableInfo table in checkedListExportTables.CheckedItems)
                 {
                     tableNames.Add(table.TableName);
@@ -544,14 +711,14 @@ namespace PLSQLMigrationTool.Forms
                     chkIncludeConstraints.Checked,
                     chkIncludeForeignKeys.Checked,
                     saveDialog.FileName);
-                
-                MessageBox.Show($"DDL exportado com sucesso para:\n{saveDialog.FileName}", "Sucesso", 
+
+                MessageBox.Show($"DDL exportado com sucesso para:\n{saveDialog.FileName}", "Sucesso",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 SetStatus("DDL exportado com sucesso");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao exportar DDL:\n{ex.Message}", "Erro", 
+                MessageBox.Show($"Erro ao exportar DDL:\n{ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetStatus("Erro ao exportar DDL");
             }
@@ -581,7 +748,7 @@ namespace PLSQLMigrationTool.Forms
         {
             if (!_connectionManager.IsConnected)
             {
-                MessageBox.Show("Não há conexão ativa com o banco de dados.\nConecte-se primeiro na aba 'Conexão'.", 
+                MessageBox.Show("Não há conexão ativa com o banco de dados.\nConecte-se primeiro na aba 'Conexão'.",
                     "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
@@ -603,5 +770,10 @@ namespace PLSQLMigrationTool.Forms
         }
 
         #endregion
+
+        private void txtServiceName_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

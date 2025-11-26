@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\PLSQLMigrationTool",
+    "\\PLSQLMigrationTool\\Forms"
   ],
-  "SelectedNode": "\\PLSQLMigrationTool.sln",
+  "SelectedNode": "\\PLSQLMigrationTool\\Forms\\MainForm.cs",
   "PreviewInSolutionExplorer": false
 }
