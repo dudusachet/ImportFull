@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using PLSQLMigrationTool.Data;
-using PLSQLMigrationTool.Models;
+using PLSQLImportFull.Data;
+using PLSQLImportFull.Models;
 
-namespace PLSQLMigrationTool.Business
+namespace PLSQLImportFull.Business
 {
     /// <summary>
     /// Gerencia operações com tabelas do banco de dados

@@ -2,7 +2,7 @@ using System;
 using System.Data;
 using Oracle.ManagedDataAccess.Client;
 
-namespace PLSQLMigrationTool.Data
+namespace PLSQLImportFull.Data
 {
     /// <summary>
     /// Executa queries e comandos no banco de dados Oracle

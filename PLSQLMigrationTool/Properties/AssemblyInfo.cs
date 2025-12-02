@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PLSQL Migration Tool")]
+[assembly: AssemblyTitle("SQL Import Full")]
 [assembly: AssemblyDescription("Ferramenta de Migração de Dados Oracle PLSQL")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("PLSQL Migration Tool")]
+[assembly: AssemblyCompany("Fullsoft")]
+[assembly: AssemblyProduct("SQL Import Full")]
 [assembly: AssemblyCopyright("Copyright © 2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

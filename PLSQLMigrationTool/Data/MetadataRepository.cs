@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using PLSQLMigrationTool.Models;
+using PLSQLImportFull.Models;
 
-namespace PLSQLMigrationTool.Data
+namespace PLSQLImportFull.Data
 {
     /// <summary>
     /// Repositório para consultas ao dicionário de dados Oracle

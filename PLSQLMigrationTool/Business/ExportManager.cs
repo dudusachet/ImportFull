@@ -1,248 +1,132 @@
+using PLSQLImportFull.Data; 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using PLSQLMigrationTool.Data;
-using PLSQLMigrationTool.Models;
+using System.Text.RegularExpressions;
+using PLSQLImportFull.Models;
 
-namespace PLSQLMigrationTool.Business
+namespace PLSQLImportFull.Business
 {
-    /// <summary>
-    /// Gerencia exportação de estruturas de banco de dados
-    /// </summary>
-    public class ExportManager
+    public class ImportManager
     {
         private OracleQueryExecutor _queryExecutor;
-        private MetadataRepository _metadataRepository;
 
-        /// <summary>
-        /// Construtor
-        /// </summary>
-        /// <param name="queryExecutor">Executor de queries</param>
-        /// <param name="metadataRepository">Repositório de metadados</param>
-        public ExportManager(OracleQueryExecutor queryExecutor, MetadataRepository metadataRepository)
+        public ImportManager(OracleQueryExecutor queryExecutor)
         {
-            _queryExecutor = queryExecutor ?? throw new ArgumentNullException(nameof(queryExecutor));
-            _metadataRepository = metadataRepository ?? throw new ArgumentNullException(nameof(metadataRepository));
+            _queryExecutor = queryExecutor ?? throw new ArgumentNullException("queryExecutor");
         }
 
         /// <summary>
-        /// Exporta DDL de tabelas selecionadas
+        /// Executa uma lista de arquivos SQL no banco
         /// </summary>
-        /// <param name="tableNames">Lista de nomes de tabelas</param>
-        /// <param name="includeConstraints">Incluir constraints</param>
-        /// <param name="includeForeignKeys">Incluir foreign keys</param>
-        /// <param name="outputFilePath">Caminho do arquivo de saída</param>
-        public void ExportTablesDDL(List<string> tableNames, bool includeConstraints, bool includeForeignKeys, string outputFilePath)
+        public void ExecuteFiles(List<string> filePaths, Action<string> logger)
         {
-            if (tableNames == null || tableNames.Count == 0)
-            {
-                throw new ArgumentException("Nenhuma tabela selecionada para exportação.");
-            }
-
-            if (string.IsNullOrEmpty(outputFilePath))
-            {
-                throw new ArgumentException("Caminho do arquivo de saída não pode ser vazio.");
-            }
-
-            StringBuilder ddlScript = new StringBuilder();
-            
-            // Cabeçalho do script
-            ddlScript.AppendLine("-- ========================================");
-            ddlScript.AppendLine("-- Script de Exportação DDL");
-            ddlScript.AppendLine($"-- Gerado em: {DateTime.Now:dd/MM/yyyy HH:mm:ss}");
-            ddlScript.AppendLine($"-- Tabelas: {tableNames.Count}");
-            ddlScript.AppendLine("-- ========================================");
-            ddlScript.AppendLine();
-
-            // Obter todas as constraints se necessário
-            List<ConstraintInfo> allConstraints = null;
-            if (includeConstraints || includeForeignKeys)
-            {
-                allConstraints = _metadataRepository.GetAllConstraints();
-            }
-
-            // Exportar cada tabela
-            foreach (string tableName in tableNames)
+            foreach (string file in filePaths)
             {
                 try
                 {
-                    ddlScript.AppendLine($"-- ========================================");
-                    ddlScript.AppendLine($"-- Tabela: {tableName}");
-                    ddlScript.AppendLine($"-- ========================================");
-                    ddlScript.AppendLine();
+                    logger($"Lendo arquivo: {Path.GetFileName(file)}...");
+                    string scriptContent = File.ReadAllText(file, Encoding.UTF8);
 
-                    // DDL da tabela
-                    string tableDDL = _metadataRepository.GetTableDDL(tableName);
-                    if (!string.IsNullOrEmpty(tableDDL))
+                    // 1. Limpar comandos SQL*Plus (SET, PROMPT, EXIT, QUIT)
+                    // O driver ADO.NET não entende esses comandos e dá erro se tentar executar
+                    scriptContent = RemoveSqlPlusCommands(scriptContent);
+
+                    // 2. Quebrar o script em comandos individuais
+                    // Oracle não executa scripts inteiros de uma vez no ADO.NET, precisa ser comando a comando
+                    List<string> commands = SplitSqlStatements(scriptContent);
+
+                    // 3. Executar comando a comando
+                    int successCount = 0;
+                    foreach (var sql in commands)
                     {
-                        ddlScript.AppendLine(tableDDL);
-                        ddlScript.AppendLine();
-                    }
+                        if (string.IsNullOrWhiteSpace(sql)) continue;
 
-                    // Constraints da tabela
-                    if (includeConstraints && allConstraints != null)
-                    {
-                        List<ConstraintInfo> tableConstraints = allConstraints.FindAll(c => 
-                            c.TableName == tableName && !c.IsForeignKey);
-
-                        if (tableConstraints.Count > 0)
+                        try
                         {
-                            ddlScript.AppendLine($"-- Constraints da tabela {tableName}");
-                            
-                            foreach (ConstraintInfo constraint in tableConstraints)
-                            {
-                                try
-                                {
-                                    string constraintDDL = _metadataRepository.GetConstraintDDL(constraint.ConstraintName);
-                                    if (!string.IsNullOrEmpty(constraintDDL))
-                                    {
-                                        ddlScript.AppendLine(constraintDDL);
-                                        ddlScript.AppendLine();
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    ddlScript.AppendLine($"-- Erro ao obter DDL da constraint {constraint.ConstraintName}: {ex.Message}");
-                                }
-                            }
+                            _queryExecutor.ExecuteNonQuery(sql); // Usa o método que já existe no seu Executor
+                            successCount++;
+                        }
+                        catch (Exception ex)
+                        {
+                            // Loga o erro mas tenta continuar (ou pare, dependendo da regra de negócio)
+                            logger($"[ERRO] Falha no comando: {sql.Substring(0, Math.Min(50, sql.Length))}... \nMsg: {ex.Message}");
                         }
                     }
 
-                    // Foreign Keys da tabela
-                    if (includeForeignKeys && allConstraints != null)
-                    {
-                        List<ConstraintInfo> foreignKeys = allConstraints.FindAll(c => 
-                            c.TableName == tableName && c.IsForeignKey);
-
-                        if (foreignKeys.Count > 0)
-                        {
-                            ddlScript.AppendLine($"-- Foreign Keys da tabela {tableName}");
-                            
-                            foreach (ConstraintInfo fk in foreignKeys)
-                            {
-                                try
-                                {
-                                    string fkDDL = _metadataRepository.GetConstraintDDL(fk.ConstraintName);
-                                    if (!string.IsNullOrEmpty(fkDDL))
-                                    {
-                                        ddlScript.AppendLine(fkDDL);
-                                        ddlScript.AppendLine();
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    ddlScript.AppendLine($"-- Erro ao obter DDL da FK {fk.ConstraintName}: {ex.Message}");
-                                }
-                            }
-                        }
-                    }
-
-                    ddlScript.AppendLine();
+                    logger($"Concluído: {Path.GetFileName(file)} ({successCount} comandos executados).");
                 }
                 catch (Exception ex)
                 {
-                    ddlScript.AppendLine($"-- Erro ao exportar tabela {tableName}: {ex.Message}");
-                    ddlScript.AppendLine();
+                    logger($"[FATAL] Erro ao processar arquivo {Path.GetFileName(file)}: {ex.Message}");
                 }
             }
-
-            // Rodapé do script
-            ddlScript.AppendLine("-- ========================================");
-            ddlScript.AppendLine("-- Fim do Script");
-            ddlScript.AppendLine("-- ========================================");
-
-            // Salvar arquivo
-            File.WriteAllText(outputFilePath, ddlScript.ToString(), Encoding.UTF8);
         }
 
-        /// <summary>
-        /// Exporta apenas constraints selecionadas
-        /// </summary>
-        /// <param name="constraints">Lista de constraints</param>
-        /// <param name="outputFilePath">Caminho do arquivo de saída</param>
-        public void ExportConstraints(List<ConstraintInfo> constraints, string outputFilePath)
+        private string RemoveSqlPlusCommands(string script)
         {
-            if (constraints == null || constraints.Count == 0)
+            StringBuilder sb = new StringBuilder();
+            using (StringReader sr = new StringReader(script))
             {
-                throw new ArgumentException("Nenhuma constraint selecionada para exportação.");
-            }
-
-            if (string.IsNullOrEmpty(outputFilePath))
-            {
-                throw new ArgumentException("Caminho do arquivo de saída não pode ser vazio.");
-            }
-
-            StringBuilder ddlScript = new StringBuilder();
-            
-            ddlScript.AppendLine("-- ========================================");
-            ddlScript.AppendLine("-- Script de Exportação de Constraints");
-            ddlScript.AppendLine($"-- Gerado em: {DateTime.Now:dd/MM/yyyy HH:mm:ss}");
-            ddlScript.AppendLine($"-- Constraints: {constraints.Count}");
-            ddlScript.AppendLine("-- ========================================");
-            ddlScript.AppendLine();
-
-            foreach (ConstraintInfo constraint in constraints)
-            {
-                try
+                string line;
+                while ((line = sr.ReadLine()) != null)
                 {
-                    ddlScript.AppendLine($"-- Constraint: {constraint.ConstraintName} ({constraint.ConstraintTypeDescription})");
-                    ddlScript.AppendLine($"-- Tabela: {constraint.TableName}");
-                    
-                    string constraintDDL = _metadataRepository.GetConstraintDDL(constraint.ConstraintName);
-                    if (!string.IsNullOrEmpty(constraintDDL))
+                    string trimmed = line.Trim().ToUpper();
+                    // Ignora linhas que começam com comandos exclusivos do SQL*Plus
+                    if (trimmed.StartsWith("SET ") ||
+                        trimmed.StartsWith("PROMPT") ||
+                        trimmed.StartsWith("EXIT") ||
+                        trimmed.StartsWith("QUIT") ||
+                        trimmed.StartsWith("--"))
                     {
-                        ddlScript.AppendLine(constraintDDL);
-                        ddlScript.AppendLine();
+                        continue;
+                    }
+                    sb.AppendLine(line);
+                }
+            }
+            return sb.ToString();
+        }
+
+        private List<string> SplitSqlStatements(string script)
+        {
+            List<string> commands = new List<string>();
+
+            // Esta é uma lógica simplificada de parser. 
+            // Scripts Oracle complexos com PL/SQL (BEGIN...END) precisam ser tratados pelo '/'
+            // Comandos SQL normais (INSERT, CREATE) terminam com ';'
+
+            // Vamos usar uma estratégia mista:
+            // Se encontrar uma linha que é apenas "/", considera o bloco anterior um comando.
+            // Se não, quebra por ";" (cuidado com ; dentro de strings, mas para DML simples funciona)
+
+            string[] rawParts = script.Split(new[] { "\r\n/", "\n/", "\r/" }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var part in rawParts)
+            {
+                string trimmedPart = part.Trim();
+                if (string.IsNullOrWhiteSpace(trimmedPart)) continue;
+
+                // Se parece um bloco PL/SQL (BEGIN/DECLARE), adiciona inteiro
+                if (trimmedPart.StartsWith("DECLARE", StringComparison.OrdinalIgnoreCase) ||
+                    trimmedPart.StartsWith("BEGIN", StringComparison.OrdinalIgnoreCase) ||
+                    trimmedPart.StartsWith("CREATE OR REPLACE", StringComparison.OrdinalIgnoreCase))
+                {
+                    commands.Add(trimmedPart);
+                }
+                else
+                {
+                    // Se for SQL comum (INSERT, UPDATE), pode ter vários separados por ;
+                    // Remove o ; final para o Oracle executar
+                    string[] statements = trimmedPart.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var stmt in statements)
+                    {
+                        if (!string.IsNullOrWhiteSpace(stmt))
+                            commands.Add(stmt.Trim());
                     }
                 }
-                catch (Exception ex)
-                {
-                    ddlScript.AppendLine($"-- Erro ao exportar constraint {constraint.ConstraintName}: {ex.Message}");
-                    ddlScript.AppendLine();
-                }
             }
-
-            ddlScript.AppendLine("-- ========================================");
-            ddlScript.AppendLine("-- Fim do Script");
-            ddlScript.AppendLine("-- ========================================");
-
-            File.WriteAllText(outputFilePath, ddlScript.ToString(), Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// Gera script para reabilitar constraints
-        /// </summary>
-        /// <param name="constraints">Lista de constraints</param>
-        /// <param name="outputFilePath">Caminho do arquivo de saída</param>
-        public void GenerateEnableConstraintsScript(List<ConstraintInfo> constraints, string outputFilePath)
-        {
-            if (constraints == null || constraints.Count == 0)
-            {
-                throw new ArgumentException("Nenhuma constraint selecionada.");
-            }
-
-            if (string.IsNullOrEmpty(outputFilePath))
-            {
-                throw new ArgumentException("Caminho do arquivo de saída não pode ser vazio.");
-            }
-
-            StringBuilder script = new StringBuilder();
-            
-            script.AppendLine("-- ========================================");
-            script.AppendLine("-- Script para Reabilitar Constraints");
-            script.AppendLine($"-- Gerado em: {DateTime.Now:dd/MM/yyyy HH:mm:ss}");
-            script.AppendLine("-- ========================================");
-            script.AppendLine();
-
-            foreach (ConstraintInfo constraint in constraints)
-            {
-                script.AppendLine($"-- {constraint.ConstraintName} ({constraint.ConstraintTypeDescription})");
-                script.AppendLine($"ALTER TABLE {constraint.TableName} ENABLE CONSTRAINT {constraint.ConstraintName};");
-                script.AppendLine();
-            }
-
-            File.WriteAllText(outputFilePath, script.ToString(), Encoding.UTF8);
+            return commands;
         }
     }
 }

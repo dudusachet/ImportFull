@@ -1,12 +1,13 @@
 using System;
+using System.Data;
 using Oracle.ManagedDataAccess.Client;
 
-namespace PLSQLMigrationTool.Data
+namespace PLSQLImportFull.Data
 {
     /// <summary>
     /// Gerencia conexões com o banco de dados Oracle
     /// </summary>
-    public class OracleConnectionManager
+    public class OracleConnectionManager : IDisposable
     {
         private string _connectionString;
         private OracleConnection _connection;
@@ -33,20 +34,11 @@ namespace PLSQLMigrationTool.Data
         /// </summary>
         public bool IsConnected
         {
-            get { return _connection != null && _connection.State == System.Data.ConnectionState.Open; }
+            get { return _connection != null && _connection.State == ConnectionState.Open; }
         }
 
-        /// <summary>
-        /// Construtor padrão
-        /// </summary>
-        public OracleConnectionManager()
-        {
-        }
+        public OracleConnectionManager() { }
 
-        /// <summary>
-        /// Construtor com string de conexão
-        /// </summary>
-        /// <param name="connectionString">String de conexão Oracle</param>
         public OracleConnectionManager(string connectionString)
         {
             _connectionString = connectionString;
@@ -55,7 +47,6 @@ namespace PLSQLMigrationTool.Data
         /// <summary>
         /// Testa a conexão com o banco de dados
         /// </summary>
-        /// <returns>True se a conexão foi bem-sucedida</returns>
         public bool TestConnection()
         {
             try
@@ -77,14 +68,18 @@ namespace PLSQLMigrationTool.Data
         /// </summary>
         public void Connect()
         {
-            if (_connection != null && _connection.State == System.Data.ConnectionState.Open)
-            {
-                return;
-            }
+            // Se já estiver conectado, não faz nada
+            if (IsConnected) return;
 
             if (string.IsNullOrEmpty(_connectionString))
             {
                 throw new InvalidOperationException("String de conexão não foi definida.");
+            }
+
+            // Se existir um objeto de conexão antigo (fechado ou quebrado), limpa ele antes
+            if (_connection != null)
+            {
+                _connection.Dispose();
             }
 
             _connection = new OracleConnection(_connectionString);
@@ -98,7 +93,7 @@ namespace PLSQLMigrationTool.Data
         {
             if (_connection != null)
             {
-                if (_connection.State == System.Data.ConnectionState.Open)
+                if (_connection.State == ConnectionState.Open)
                 {
                     _connection.Close();
                 }
@@ -108,9 +103,8 @@ namespace PLSQLMigrationTool.Data
         }
 
         /// <summary>
-        /// Obtém uma nova conexão (para operações paralelas)
+        /// Obtém uma nova conexão (para operações paralelas/threads)
         /// </summary>
-        /// <returns>Nova instância de OracleConnection</returns>
         public OracleConnection GetNewConnection()
         {
             if (string.IsNullOrEmpty(_connectionString))
@@ -121,6 +115,32 @@ namespace PLSQLMigrationTool.Data
             OracleConnection newConn = new OracleConnection(_connectionString);
             newConn.Open();
             return newConn;
+        }
+
+        /// <summary>
+        /// Executa um comando SQL sem retorno (INSERT, UPDATE, DELETE, PL/SQL Block)
+        /// Útil para comandos rápidos como ALTER SESSION ou DBMS_STATS
+        /// </summary>
+        public void ExecuteNonQuery(string sql)
+        {
+            if (!IsConnected)
+                throw new InvalidOperationException("Banco desconectado.");
+
+            using (OracleCommand cmd = _connection.CreateCommand())
+            {
+                cmd.CommandText = sql;
+                cmd.CommandType = CommandType.Text;
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        /// <summary>
+        /// Libera recursos da classe (Implementação de IDisposable)
+        /// </summary>
+        public void Dispose()
+        {
+            Disconnect();
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -1,0 +1,8 @@
+C:\fullsoft\PLSQLMigration Tool-0.3.1\PLSQLMigrationTool\obj\Debug\SQL Import Full.csproj.AssemblyReference.cache
+C:\fullsoft\PLSQLMigration Tool-0.3.1\PLSQLMigrationTool\obj\Debug\PLSQLImportFull.exe.config
+C:\fullsoft\PLSQLMigration Tool-0.3.1\PLSQLMigrationTool\obj\Debug\PLSQLImportFull.Forms.MainForm.resources
+C:\fullsoft\PLSQLMigration Tool-0.3.1\PLSQLMigrationTool\obj\Debug\PLSQLImportFull.Properties.Resources.resources
+C:\fullsoft\PLSQLMigration Tool-0.3.1\PLSQLMigrationTool\obj\Debug\SQL Import Full.csproj.GenerateResource.cache
+C:\fullsoft\PLSQLMigration Tool-0.3.1\PLSQLMigrationTool\obj\Debug\SQL Import Full.csproj.CoreCompileInputs.cache
+C:\fullsoft\PLSQLMigration Tool-0.3.1\PLSQLMigrationTool\obj\Debug\PLSQLImportFull.exe
+C:\fullsoft\PLSQLMigration Tool-0.3.1\PLSQLMigrationTool\obj\Debug\PLSQLImportFull.pdb

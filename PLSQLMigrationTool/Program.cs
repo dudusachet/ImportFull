@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace PLSQLMigrationTool
+namespace PLSQLImportFull
 {
     static class Program
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace PLSQLMigrationTool.Models
+namespace PLSQLImportFull.Models
 {
     /// <summary>
     /// Representa informações de uma constraint do banco de dados
