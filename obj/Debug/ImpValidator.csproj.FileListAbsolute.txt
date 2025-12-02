@@ -1,0 +1,12 @@
+C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Debug\ImportFullUpdater.exe.config
+C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Debug\ImportFullUpdater.exe
+C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Debug\ImportFullUpdater.pdb
+C:\Users\eduardo.sachet\source\repos\ImportFullUpdater\obj\Debug\ImpValidator.csproj.AssemblyReference.cache
+C:\Users\eduardo.sachet\source\repos\ImportFullUpdater\obj\Debug\ImportFullUpdater.Properties.Resources.resources
+C:\Users\eduardo.sachet\source\repos\ImportFullUpdater\obj\Debug\ImpValidator.csproj.GenerateResource.cache
+C:\Users\eduardo.sachet\source\repos\ImportFullUpdater\obj\Debug\ImpValidator.csproj.CoreCompileInputs.cache
+C:\Users\eduardo.sachet\source\repos\ImportFullUpdater\obj\Debug\ImportFullUpdater.exe
+C:\Users\eduardo.sachet\source\repos\ImportFullUpdater\obj\Debug\ImportFullUpdater.pdb
+C:\Users\eduardo.sachet\source\repos\ImportFullUpdater\obj\Debug\ImportFullUpdater.exe.config
+C:\Users\eduardo.sachet\source\repos\ImportFullUpdater\obj\Debug\ImportFullUpdater.Form1.resources
+C:\Users\eduardo.sachet\source\repos\ImportFullUpdater\obj\Debug\ImpValid.9AE8797A.Up2Date
