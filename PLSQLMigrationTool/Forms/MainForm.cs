@@ -1008,7 +1008,7 @@ namespace PLSQLImportFull.Forms
                             File.WriteAllText(caminhoVersion, Assembly.GetExecutingAssembly().GetName().Version.ToString());
                         }
                         string currentAssembly = File.ReadAllText(caminhoVersion);
-                        string version = File.ReadAllText($@"\\172.25.100.248\wms246\Builds\WMS\Outros\ImpValidator\Atu\version.txt");
+                        string version = File.ReadAllText($@"\\172.25.100.248\wms246\Builds\WMS\Outros\Import_Full_Updater\Atu\version.txt");
 
                         if (currentAssembly != version)
                         {

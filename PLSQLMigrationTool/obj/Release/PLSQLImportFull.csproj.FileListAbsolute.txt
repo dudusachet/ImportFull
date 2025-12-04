@@ -60,7 +60,6 @@ C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\System.Text.Json.xm
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\System.Threading.Tasks.Extensions.xml
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\System.ValueTuple.xml
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.csproj.AssemblyReference.cache
-C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.exe.config
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.Forms.MainForm.resources
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.Properties.Resources.resources
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.csproj.GenerateResource.cache
