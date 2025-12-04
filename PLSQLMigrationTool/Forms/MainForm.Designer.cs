@@ -35,14 +35,14 @@ namespace PLSQLImportFull.Forms
             this.tabMaintenance = new System.Windows.Forms.TabPage();
             this.btnRunMaintenance = new System.Windows.Forms.Button();
             this.grpMaintenanceActions = new System.Windows.Forms.GroupBox();
-            this.chkResetSequences = new System.Windows.Forms.CheckBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.chkDisableAllTriggers = new System.Windows.Forms.CheckBox();
             this.chkDisableFKAndCheck = new System.Windows.Forms.CheckBox();
             this.chkPurgeRecycleBin = new System.Windows.Forms.CheckBox();
+            this.chkResetSequences = new System.Windows.Forms.CheckBox();
             this.chkGatherStats = new System.Windows.Forms.CheckBox();
             this.rtbImportLog = new System.Windows.Forms.RichTextBox();
             this.lblLog = new System.Windows.Forms.Label();
-            this.btnPurgeRecycleBin = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabConnection = new System.Windows.Forms.TabPage();
             this.button1 = new System.Windows.Forms.Button();
@@ -70,6 +70,8 @@ namespace PLSQLImportFull.Forms
             this.btnSelectAllTables = new System.Windows.Forms.Button();
             this.btnRefreshTables = new System.Windows.Forms.Button();
             this.btnTruncate = new System.Windows.Forms.Button();
+            this.btnSortTruncateName = new System.Windows.Forms.Button();
+            this.btnSortTruncateRows = new System.Windows.Forms.Button();
             this.tabImport = new System.Windows.Forms.TabPage();
             this.lstImportFiles = new System.Windows.Forms.ListBox();
             this.btnSelectImportFiles = new System.Windows.Forms.Button();
@@ -149,7 +151,7 @@ namespace PLSQLImportFull.Forms
             this.btnRunMaintenance.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnRunMaintenance.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.btnRunMaintenance.ForeColor = System.Drawing.Color.Black;
-            this.btnRunMaintenance.Location = new System.Drawing.Point(20, 371);
+            this.btnRunMaintenance.Location = new System.Drawing.Point(20, 260);
             this.btnRunMaintenance.Name = "btnRunMaintenance";
             this.btnRunMaintenance.Size = new System.Drawing.Size(710, 50);
             this.btnRunMaintenance.TabIndex = 1;
@@ -161,28 +163,29 @@ namespace PLSQLImportFull.Forms
             // 
             this.grpMaintenanceActions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpMaintenanceActions.Controls.Add(this.chkResetSequences);
+            this.grpMaintenanceActions.Controls.Add(this.checkBox2);
             this.grpMaintenanceActions.Controls.Add(this.chkDisableAllTriggers);
             this.grpMaintenanceActions.Controls.Add(this.chkDisableFKAndCheck);
             this.grpMaintenanceActions.Controls.Add(this.chkPurgeRecycleBin);
-            this.grpMaintenanceActions.Controls.Add(this.chkGatherStats);
             this.grpMaintenanceActions.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.grpMaintenanceActions.Location = new System.Drawing.Point(20, 38);
             this.grpMaintenanceActions.Name = "grpMaintenanceActions";
-            this.grpMaintenanceActions.Size = new System.Drawing.Size(710, 327);
+            this.grpMaintenanceActions.Size = new System.Drawing.Size(710, 217);
             this.grpMaintenanceActions.TabIndex = 0;
             this.grpMaintenanceActions.TabStop = false;
             this.grpMaintenanceActions.Text = "Selecione as ações a executar:";
             // 
-            // chkResetSequences
+            // checkBox2
             // 
-            this.chkResetSequences.AutoSize = true;
-            this.chkResetSequences.Location = new System.Drawing.Point(30, 175);
-            this.chkResetSequences.Name = "chkResetSequences";
-            this.chkResetSequences.Size = new System.Drawing.Size(358, 23);
-            this.chkResetSequences.TabIndex = 4;
-            this.chkResetSequences.Text = "Resetar Sequences (prc_wms_util_reset_sequence)";
-            this.chkResetSequences.UseVisualStyleBackColor = true;
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.checkBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox2.Location = new System.Drawing.Point(30, 140);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(265, 20);
+            this.checkBox2.TabIndex = 5;
+            this.checkBox2.Text = "Gerar Estatísticas (Gather Schema Stats)";
+            this.checkBox2.UseVisualStyleBackColor = true;
             // 
             // chkDisableAllTriggers
             // 
@@ -220,12 +223,24 @@ namespace PLSQLImportFull.Forms
             this.chkPurgeRecycleBin.Text = "Limpar Lixeira (PURGE RECYCLEBIN)";
             this.chkPurgeRecycleBin.UseVisualStyleBackColor = true;
             // 
+            // chkResetSequences
+            // 
+            this.chkResetSequences.AutoSize = true;
+            this.chkResetSequences.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.chkResetSequences.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkResetSequences.Location = new System.Drawing.Point(30, 140);
+            this.chkResetSequences.Name = "chkResetSequences";
+            this.chkResetSequences.Size = new System.Drawing.Size(334, 20);
+            this.chkResetSequences.TabIndex = 4;
+            this.chkResetSequences.Text = "Resetar Sequences (prc_wms_util_reset_sequence)";
+            this.chkResetSequences.UseVisualStyleBackColor = true;
+            // 
             // chkGatherStats
             // 
             this.chkGatherStats.AutoSize = true;
             this.chkGatherStats.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkGatherStats.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkGatherStats.Location = new System.Drawing.Point(30, 140);
+            this.chkGatherStats.Location = new System.Drawing.Point(30, 105);
             this.chkGatherStats.Name = "chkGatherStats";
             this.chkGatherStats.Size = new System.Drawing.Size(265, 20);
             this.chkGatherStats.TabIndex = 3;
@@ -234,7 +249,8 @@ namespace PLSQLImportFull.Forms
             // 
             // rtbImportLog
             // 
-            this.rtbImportLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.rtbImportLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbImportLog.BackColor = System.Drawing.Color.Black;
             this.rtbImportLog.Font = new System.Drawing.Font("Consolas", 9F);
@@ -247,7 +263,8 @@ namespace PLSQLImportFull.Forms
             // 
             // lblLog
             // 
-            this.lblLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblLog.AutoSize = true;
             this.lblLog.Location = new System.Drawing.Point(9, 183);
@@ -255,17 +272,6 @@ namespace PLSQLImportFull.Forms
             this.lblLog.Size = new System.Drawing.Size(94, 13);
             this.lblLog.TabIndex = 10;
             this.lblLog.Text = "Log de Execução:";
-            // 
-            // btnPurgeRecycleBin
-            // 
-            this.btnPurgeRecycleBin.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnPurgeRecycleBin.Location = new System.Drawing.Point(130, 407);
-            this.btnPurgeRecycleBin.Name = "btnPurgeRecycleBin";
-            this.btnPurgeRecycleBin.Size = new System.Drawing.Size(140, 26);
-            this.btnPurgeRecycleBin.TabIndex = 5;
-            this.btnPurgeRecycleBin.Text = "Limpar Lixeira (Purge)";
-            this.btnPurgeRecycleBin.UseVisualStyleBackColor = true;
-            this.btnPurgeRecycleBin.Click += new System.EventHandler(this.btnPurgeRecycleBin_Click);
             // 
             // tabControl
             // 
@@ -488,13 +494,14 @@ namespace PLSQLImportFull.Forms
             // 
             // tabTruncate
             // 
-            this.tabTruncate.Controls.Add(this.btnPurgeRecycleBin);
             this.tabTruncate.Controls.Add(this.label4);
             this.tabTruncate.Controls.Add(this.checkedListTables);
             this.tabTruncate.Controls.Add(this.btnDeselectAllTables);
             this.tabTruncate.Controls.Add(this.btnSelectAllTables);
             this.tabTruncate.Controls.Add(this.btnRefreshTables);
             this.tabTruncate.Controls.Add(this.btnTruncate);
+            this.tabTruncate.Controls.Add(this.btnSortTruncateName);
+            this.tabTruncate.Controls.Add(this.btnSortTruncateRows);
             this.tabTruncate.Location = new System.Drawing.Point(4, 22);
             this.tabTruncate.Name = "tabTruncate";
             this.tabTruncate.Size = new System.Drawing.Size(750, 438);
@@ -505,7 +512,7 @@ namespace PLSQLImportFull.Forms
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(9, 13);
+            this.label4.Location = new System.Drawing.Point(8, 24);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(153, 13);
             this.label4.TabIndex = 5;
@@ -517,9 +524,9 @@ namespace PLSQLImportFull.Forms
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.checkedListTables.FormattingEnabled = true;
-            this.checkedListTables.Location = new System.Drawing.Point(9, 35);
+            this.checkedListTables.Location = new System.Drawing.Point(9, 50);
             this.checkedListTables.Name = "checkedListTables";
-            this.checkedListTables.Size = new System.Drawing.Size(729, 349);
+            this.checkedListTables.Size = new System.Drawing.Size(729, 334);
             this.checkedListTables.TabIndex = 4;
             // 
             // btnDeselectAllTables
@@ -566,6 +573,28 @@ namespace PLSQLImportFull.Forms
             this.btnTruncate.UseVisualStyleBackColor = true;
             this.btnTruncate.Click += new System.EventHandler(this.btnTruncate_Click);
             // 
+            // btnSortTruncateName
+            // 
+            this.btnSortTruncateName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSortTruncateName.Location = new System.Drawing.Point(638, 19);
+            this.btnSortTruncateName.Name = "btnSortTruncateName";
+            this.btnSortTruncateName.Size = new System.Drawing.Size(100, 23);
+            this.btnSortTruncateName.TabIndex = 15;
+            this.btnSortTruncateName.Text = "Ordenar Nome";
+            this.btnSortTruncateName.UseVisualStyleBackColor = true;
+            this.btnSortTruncateName.Click += new System.EventHandler(this.btnSortTruncateName_Click);
+            // 
+            // btnSortTruncateRows
+            // 
+            this.btnSortTruncateRows.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSortTruncateRows.Location = new System.Drawing.Point(532, 19);
+            this.btnSortTruncateRows.Name = "btnSortTruncateRows";
+            this.btnSortTruncateRows.Size = new System.Drawing.Size(100, 23);
+            this.btnSortTruncateRows.TabIndex = 16;
+            this.btnSortTruncateRows.Text = "Ordenar Linhas";
+            this.btnSortTruncateRows.UseVisualStyleBackColor = true;
+            this.btnSortTruncateRows.Click += new System.EventHandler(this.btnSortTruncateRows_Click);
+            // 
             // tabImport
             // 
             this.tabImport.Controls.Add(this.lstImportFiles);
@@ -583,8 +612,7 @@ namespace PLSQLImportFull.Forms
             // 
             // lstImportFiles
             // 
-            this.lstImportFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.lstImportFiles.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lstImportFiles.FormattingEnabled = true;
             this.lstImportFiles.Location = new System.Drawing.Point(9, 55);
@@ -641,14 +669,14 @@ namespace PLSQLImportFull.Forms
             this.tabRestore.Padding = new System.Windows.Forms.Padding(3);
             this.tabRestore.Size = new System.Drawing.Size(750, 438);
             this.tabRestore.TabIndex = 2;
-            this.tabRestore.Text = "Restaurar / Habilitar";
+            this.tabRestore.Text = "5 - Restaurar / Habilitar";
             this.tabRestore.UseVisualStyleBackColor = true;
             // 
             // lblRestoreInfo
             // 
             this.lblRestoreInfo.AutoSize = true;
             this.lblRestoreInfo.ForeColor = System.Drawing.Color.DimGray;
-            this.lblRestoreInfo.Location = new System.Drawing.Point(20, 220);
+            this.lblRestoreInfo.Location = new System.Drawing.Point(20, 319);
             this.lblRestoreInfo.Name = "lblRestoreInfo";
             this.lblRestoreInfo.Size = new System.Drawing.Size(250, 13);
             this.lblRestoreInfo.TabIndex = 2;
@@ -660,11 +688,11 @@ namespace PLSQLImportFull.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRunRestore.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.btnRunRestore.ForeColor = System.Drawing.Color.DarkGreen;
-            this.btnRunRestore.Location = new System.Drawing.Point(20, 160);
+            this.btnRunRestore.Location = new System.Drawing.Point(20, 260);
             this.btnRunRestore.Name = "btnRunRestore";
             this.btnRunRestore.Size = new System.Drawing.Size(710, 50);
             this.btnRunRestore.TabIndex = 1;
-            this.btnRunRestore.Text = "EXECUTAR RESTAURAÇÃO";
+            this.btnRunRestore.Text = "EXECUTAR SELECIONADOS";
             this.btnRunRestore.UseVisualStyleBackColor = true;
             this.btnRunRestore.Click += new System.EventHandler(this.btnRunRestore_Click);
             // 
@@ -674,10 +702,12 @@ namespace PLSQLImportFull.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpRestoreActions.Controls.Add(this.chkEnableAllTriggers);
             this.grpRestoreActions.Controls.Add(this.chkEnableFKAndCheck);
+            this.grpRestoreActions.Controls.Add(this.chkResetSequences);
+            this.grpRestoreActions.Controls.Add(this.chkGatherStats);
             this.grpRestoreActions.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.grpRestoreActions.Location = new System.Drawing.Point(20, 20);
+            this.grpRestoreActions.Location = new System.Drawing.Point(20, 38);
             this.grpRestoreActions.Name = "grpRestoreActions";
-            this.grpRestoreActions.Size = new System.Drawing.Size(710, 120);
+            this.grpRestoreActions.Size = new System.Drawing.Size(710, 215);
             this.grpRestoreActions.TabIndex = 0;
             this.grpRestoreActions.TabStop = false;
             this.grpRestoreActions.Text = "Selecione o que deseja reativar:";
@@ -1143,6 +1173,8 @@ namespace PLSQLImportFull.Forms
         private System.Windows.Forms.Button btnDisableConstraints;
         private System.Windows.Forms.Button btnEnableConstraints;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button btnSortTruncateName;
+        private System.Windows.Forms.Button btnSortTruncateRows;
         private System.Windows.Forms.CheckedListBox checkedListTables;
         private System.Windows.Forms.Button btnDeselectAllTables;
         private System.Windows.Forms.Button btnSelectAllTables;
@@ -1178,7 +1210,6 @@ namespace PLSQLImportFull.Forms
         private System.Windows.Forms.Button btnDisableFKandCheck;
         private System.Windows.Forms.Button btnLoadConfig;
         private System.Windows.Forms.TextBox txtPassword;
-        private System.Windows.Forms.Button btnPurgeRecycleBin;
         private System.Windows.Forms.ListBox lstImportFiles;
         private System.Windows.Forms.Button btnSelectImportFiles;
         private System.Windows.Forms.Button btnRunImport;
@@ -1191,6 +1222,7 @@ namespace PLSQLImportFull.Forms
         private System.Windows.Forms.CheckBox chkDisableFKAndCheck;
         private System.Windows.Forms.CheckBox chkPurgeRecycleBin;
         private System.Windows.Forms.CheckBox chkGatherStats;
+        //private System.Windows.Forms.CheckBox chkGatherStats2;
         private System.Windows.Forms.Button btnRunMaintenance;
         private System.Windows.Forms.TabPage tabRestore;
         private System.Windows.Forms.GroupBox grpRestoreActions;
@@ -1199,6 +1231,8 @@ namespace PLSQLImportFull.Forms
         private System.Windows.Forms.Button btnRunRestore;
         private System.Windows.Forms.Label lblRestoreInfo;
         private System.Windows.Forms.CheckBox chkResetSequences;
+        //private System.Windows.Forms.CheckBox chkResetSequences2;
         private Button button1;
+        private CheckBox checkBox2;
     }
 }

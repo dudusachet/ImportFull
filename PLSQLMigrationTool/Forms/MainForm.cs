@@ -26,7 +26,8 @@ namespace PLSQLImportFull.Forms
 
         // Variável da bolinha
         private ToolStripStatusLabel lblStatusIcon;
-
+        private bool _truncateSortAscName = true;
+        private bool _truncateSortAscRows = false;
         private List<TriggerInfo> _allTriggers;
         private List<ConstraintInfo> _allConstraints;
         private List<TableInfo> _allTables;
@@ -199,6 +200,59 @@ namespace PLSQLImportFull.Forms
             }
         }
 
+        private void btnSortTruncateName_Click(object sender, EventArgs e)
+        {
+            if (_allTables == null || _allTables.Count == 0) return;
+
+            // Alterna a ordem
+            _truncateSortAscName = !_truncateSortAscName;
+
+            if (_truncateSortAscName)
+            {
+                // A-Z
+                _allTables.Sort((x, y) => string.Compare(x.TableName, y.TableName));
+                btnSortTruncateName.Text = "Nome ▲";
+            }
+            else
+            {
+                // Z-A
+                _allTables.Sort((x, y) => string.Compare(y.TableName, x.TableName));
+                btnSortTruncateName.Text = "Nome ▼";
+            }
+
+            // Reseta o texto do outro botão
+            btnSortTruncateRows.Text = "Ordenar Linhas";
+
+            // Atualiza a lista visual
+            UpdateTruncateList(_allTables);
+        }
+
+        private void btnSortTruncateRows_Click(object sender, EventArgs e)
+        {
+            if (_allTables == null || _allTables.Count == 0) return;
+
+            // Alterna a ordem
+            _truncateSortAscRows = !_truncateSortAscRows;
+
+            if (_truncateSortAscRows)
+            {
+                // 0-9 (Crescente)
+                _allTables.Sort((x, y) => x.NumRows.CompareTo(y.NumRows));
+                btnSortTruncateRows.Text = "Linhas ▲";
+            }
+            else
+            {
+                // 9-0 (Decrescente - Mais útil para ver tabelas cheias)
+                _allTables.Sort((x, y) => y.NumRows.CompareTo(x.NumRows));
+                btnSortTruncateRows.Text = "Linhas ▼";
+            }
+
+            // Reseta o texto do outro botão
+            btnSortTruncateName.Text = "Ordenar Nome";
+
+            // Atualiza a lista visual
+            UpdateTruncateList(_allTables);
+        }
         private void ProcessarStringConexao(string fullString)
         {
             try
@@ -473,8 +527,7 @@ namespace PLSQLImportFull.Forms
             {
                 SetStatus("Carregando tabelas...");
                 _allTables = _tableManager.GetAllTables();
-                checkedListTables.Items.Clear();
-                foreach (var t in _allTables) checkedListTables.Items.Add(t);
+                UpdateTruncateList(_allTables);
                 SetStatus($"{_allTables.Count} tabelas carregadas");
             }
             catch (Exception ex) { MessageBox.Show("Erro: " + ex.Message); }
@@ -627,26 +680,30 @@ namespace PLSQLImportFull.Forms
         {
             if (!CheckConnection()) return;
 
+            // 1. Captura opções marcadas DIRETAMENTE pelas variáveis
             bool doTriggers = chkDisableAllTriggers.Checked;
             bool doConstraints = chkDisableFKAndCheck.Checked;
             bool doPurge = chkPurgeRecycleBin.Checked;
             bool doStats = chkGatherStats.Checked;
-            bool doSequences = chkResetSequences.Checked; // <--- NOVA OPÇÃO
 
-            if (!doTriggers && !doConstraints && !doPurge && !doStats && !doSequences)
+
+            // Verifica se NENHUMA opção foi marcada
+            if (!doTriggers && !doConstraints && !doPurge && !doStats)
             {
-                MessageBox.Show("Selecione ao menos uma opção.", "Aviso");
+                MessageBox.Show("Selecione ao menos uma opção para executar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            if (MessageBox.Show("Confirmar execução das tarefas selecionadas?", "Confirmação",
+            if (MessageBox.Show("Confirmar execução das tarefas de manutenção selecionadas?", "Confirmação",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
 
+            // 2. Prepara UI
             this.Cursor = Cursors.WaitCursor;
             btnRunMaintenance.Enabled = false;
             grpMaintenanceActions.Enabled = false;
             SetStatus("Iniciando manutenção...");
 
+            // 3. Executa em Background
             System.ComponentModel.BackgroundWorker worker = new System.ComponentModel.BackgroundWorker();
             worker.WorkerReportsProgress = true;
 
@@ -654,8 +711,37 @@ namespace PLSQLImportFull.Forms
             {
                 try
                 {
-                    // ... (Lógica anterior de Triggers, Constraints, Purge) ...
-                    // ... Mantenha o código existente aqui ...
+                    // A. Desabilitar Triggers
+                    if (doTriggers)
+                    {
+                        worker.ReportProgress(0, "Carregando e desabilitando Triggers...");
+                        var triggers = _triggerManager.GetAllTriggers();
+                        if (triggers.Count > 0)
+                        {
+                            List<string> names = new List<string>();
+                            foreach (var t in triggers) names.Add(t.TriggerName);
+                            _triggerManager.DisableTriggers(names);
+                        }
+                    }
+
+                    // B. Desabilitar FK e Checks
+                    if (doConstraints)
+                    {
+                        worker.ReportProgress(0, "Carregando e desabilitando Constraints...");
+                        var constraints = _constraintManager.GetAllConstraints();
+                        var target = constraints.FindAll(c => c.ConstraintType == "R" || c.ConstraintType == "C");
+                        if (target.Count > 0)
+                        {
+                            _constraintManager.DisableConstraints(target);
+                        }
+                    }
+
+                    // C. Purge RecycleBin
+                    if (doPurge)
+                    {
+                        worker.ReportProgress(0, "Limpando Lixeira (Purge)...");
+                        _connectionManager.ExecuteNonQuery("PURGE RECYCLEBIN");
+                    }
 
                     // D. Stats
                     if (doStats)
@@ -664,22 +750,39 @@ namespace PLSQLImportFull.Forms
                         _connectionManager.ExecuteNonQuery("BEGIN dbms_stats.gather_schema_stats(user); END;");
                     }
 
-                    // E. Reset Sequences (NOVA LÓGICA)
-                    if (doSequences)
-                    {
-                        worker.ReportProgress(0, "Resetando Sequences...");
-                        // Chama a procedure passando 'S' para gravar e 'S' para mostrar maior
-                        _connectionManager.ExecuteNonQuery("BEGIN prc_wms_util_reset_sequence('S', 'S'); END;");
-                    }
-
                     args.Result = "Sucesso";
                 }
-                catch (Exception ex) { args.Result = "Erro: " + ex.Message; }
+                catch (Exception ex)
+                {
+                    args.Result = "Erro: " + ex.Message;
+                }
             };
-        }
 
-        // ... (Restante do código: ProgressChanged, RunWorkerCompleted) ...
-        // ... Mantenha igual ...
+            worker.ProgressChanged += (s, args) =>
+            {
+                SetStatus(args.UserState.ToString());
+            };
+
+            worker.RunWorkerCompleted += (s, args) =>
+            {
+                this.Cursor = Cursors.Default;
+                btnRunMaintenance.Enabled = true;
+                grpMaintenanceActions.Enabled = true;
+
+                if (args.Result.ToString().StartsWith("Erro"))
+                {
+                    MessageBox.Show(args.Result.ToString(), "Erro na Execução", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    SetStatus("Erro na manutenção");
+                }
+                else
+                {
+                    MessageBox.Show("Todas as tarefas selecionadas foram concluídas!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    SetStatus("Manutenção concluída");
+                }
+            };
+
+            worker.RunWorkerAsync();
+        }
         private void btnRunImport_Click(object sender, EventArgs e)
         {
             if (!CheckConnection()) return;
@@ -746,19 +849,25 @@ namespace PLSQLImportFull.Forms
         {
             if (!CheckConnection()) return;
 
+            // 1. Captura opções
             bool enableTriggers = chkEnableAllTriggers.Checked;
             bool enableConstraints = chkEnableFKAndCheck.Checked;
 
-            if (!enableTriggers && !enableConstraints)
+            // Certifique-se que os nomes aqui batem com o Designer
+            // Se você usou chkResetSequences2 no designer, mude aqui.
+            // Pelo seu código enviado, parece ser chkResetSequences e chkGatherStats
+            bool doSequences = chkResetSequences.Checked;
+            bool doStats = chkGatherStats.Checked;
+
+            if (!enableTriggers && !enableConstraints && !doSequences && !doStats)
             {
-                MessageBox.Show("Selecione ao menos uma opção para habilitar.", "Aviso");
+                MessageBox.Show("Selecione ao menos uma opção para habilitar/restaurar.", "Aviso");
                 return;
             }
 
-            if (MessageBox.Show("Deseja reabilitar os objetos selecionados?", "Confirmar Restauração",
+            if (MessageBox.Show("Deseja executar as tarefas selecionadas?", "Confirmar Restauração",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
 
-            // Prepara UI
             this.Cursor = Cursors.WaitCursor;
             btnRunRestore.Enabled = false;
             grpRestoreActions.Enabled = false;
@@ -774,9 +883,8 @@ namespace PLSQLImportFull.Forms
                     // A. Habilitar Triggers
                     if (enableTriggers)
                     {
-                        worker.ReportProgress(0, "Buscando e habilitando Triggers...");
+                        worker.ReportProgress(0, "Habilitando Triggers...");
                         var triggers = _triggerManager.GetAllTriggers();
-
                         if (triggers.Count > 0)
                         {
                             List<string> names = new List<string>();
@@ -785,19 +893,27 @@ namespace PLSQLImportFull.Forms
                         }
                     }
 
-                    // B. Habilitar Constraints (FK e Check)
+                    // B. Habilitar Constraints
                     if (enableConstraints)
                     {
-                        worker.ReportProgress(0, "Buscando e habilitando Constraints...");
+                        worker.ReportProgress(0, "Habilitando Constraints...");
                         var allConstraints = _constraintManager.GetAllConstraints();
-
-                        // Filtra apenas FK (R) e Check (C)
                         var target = allConstraints.FindAll(c => c.ConstraintType == "R" || c.ConstraintType == "C");
+                        if (target.Count > 0) _constraintManager.EnableConstraints(target);
+                    }
 
-                        if (target.Count > 0)
-                        {
-                            _constraintManager.EnableConstraints(target);
-                        }
+                    // C. Resetar Sequences (ADICIONADO)
+                    if (doSequences)
+                    {
+                        worker.ReportProgress(0, "Resetando Sequences...");
+                        _connectionManager.ExecuteNonQuery("BEGIN prc_wms_util_reset_sequence('S', 'S'); END;");
+                    }
+
+                    // D. Gerar Estatísticas (ADICIONADO)
+                    if (doStats)
+                    {
+                        worker.ReportProgress(0, "Gerando Estatísticas (Pode demorar)...");
+                        _connectionManager.ExecuteNonQuery("BEGIN dbms_stats.gather_schema_stats(user); END;");
                     }
 
                     args.Result = "Sucesso";
@@ -818,17 +934,26 @@ namespace PLSQLImportFull.Forms
 
                 if (args.Result.ToString().StartsWith("Erro"))
                 {
-                    MessageBox.Show(args.Result.ToString(), "Erro na Restauração", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(args.Result.ToString(), "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     SetStatus("Erro na restauração");
                 }
                 else
                 {
-                    MessageBox.Show("Objetos reabilitados com sucesso!", "Concluído", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Processo de restauração concluído com sucesso!", "Concluído", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     SetStatus("Restauração concluída");
                 }
             };
 
             worker.RunWorkerAsync();
+        }
+        private void UpdateTruncateList(List<TableInfo> tablesToShow)
+        {
+            checkedListTables.Items.Clear();
+            if (tablesToShow == null) return;
+            foreach (var t in tablesToShow)
+            {
+                checkedListTables.Items.Add(t);
+            }
         }
         private bool CheckConnection()
         {
