@@ -41,8 +41,6 @@ namespace PLSQLImportFull.Forms
             this.chkPurgeRecycleBin = new System.Windows.Forms.CheckBox();
             this.chkResetSequences = new System.Windows.Forms.CheckBox();
             this.chkGatherStats = new System.Windows.Forms.CheckBox();
-            this.rtbImportLog = new System.Windows.Forms.RichTextBox();
-            this.lblLog = new System.Windows.Forms.Label();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabConnection = new System.Windows.Forms.TabPage();
             this.button1 = new System.Windows.Forms.Button();
@@ -68,16 +66,18 @@ namespace PLSQLImportFull.Forms
             this.checkedListTables = new System.Windows.Forms.CheckedListBox();
             this.btnDeselectAllTables = new System.Windows.Forms.Button();
             this.btnSelectAllTables = new System.Windows.Forms.Button();
-            this.btnRefreshTables = new System.Windows.Forms.Button();
             this.btnTruncate = new System.Windows.Forms.Button();
             this.btnSortTruncateName = new System.Windows.Forms.Button();
             this.btnSortTruncateRows = new System.Windows.Forms.Button();
             this.tabImport = new System.Windows.Forms.TabPage();
+            this.label7 = new System.Windows.Forms.Label();
             this.lstImportFiles = new System.Windows.Forms.ListBox();
             this.btnSelectImportFiles = new System.Windows.Forms.Button();
             this.btnRunImport = new System.Windows.Forms.Button();
             this.btnClearImportList = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
+            this.lblLog = new System.Windows.Forms.Label();
+            this.rtbImportLog = new System.Windows.Forms.RichTextBox();
             this.tabRestore = new System.Windows.Forms.TabPage();
             this.lblRestoreInfo = new System.Windows.Forms.Label();
             this.btnRunRestore = new System.Windows.Forms.Button();
@@ -247,32 +247,6 @@ namespace PLSQLImportFull.Forms
             this.chkGatherStats.Text = "Gerar Estatísticas (Gather Schema Stats)";
             this.chkGatherStats.UseVisualStyleBackColor = true;
             // 
-            // rtbImportLog
-            // 
-            this.rtbImportLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.rtbImportLog.BackColor = System.Drawing.Color.Black;
-            this.rtbImportLog.Font = new System.Drawing.Font("Consolas", 9F);
-            this.rtbImportLog.Location = new System.Drawing.Point(8, 199);
-            this.rtbImportLog.Name = "rtbImportLog";
-            this.rtbImportLog.ReadOnly = true;
-            this.rtbImportLog.Size = new System.Drawing.Size(729, 186);
-            this.rtbImportLog.TabIndex = 11;
-            this.rtbImportLog.Text = "";
-            // 
-            // lblLog
-            // 
-            this.lblLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblLog.AutoSize = true;
-            this.lblLog.Location = new System.Drawing.Point(9, 183);
-            this.lblLog.Name = "lblLog";
-            this.lblLog.Size = new System.Drawing.Size(94, 13);
-            this.lblLog.TabIndex = 10;
-            this.lblLog.Text = "Log de Execução:";
-            // 
             // tabControl
             // 
             this.tabControl.Controls.Add(this.tabConnection);
@@ -317,6 +291,7 @@ namespace PLSQLImportFull.Forms
             // 
             // button1
             // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button1.Location = new System.Drawing.Point(598, 406);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(139, 26);
@@ -498,7 +473,6 @@ namespace PLSQLImportFull.Forms
             this.tabTruncate.Controls.Add(this.checkedListTables);
             this.tabTruncate.Controls.Add(this.btnDeselectAllTables);
             this.tabTruncate.Controls.Add(this.btnSelectAllTables);
-            this.tabTruncate.Controls.Add(this.btnRefreshTables);
             this.tabTruncate.Controls.Add(this.btnTruncate);
             this.tabTruncate.Controls.Add(this.btnSortTruncateName);
             this.tabTruncate.Controls.Add(this.btnSortTruncateRows);
@@ -532,7 +506,7 @@ namespace PLSQLImportFull.Forms
             // btnDeselectAllTables
             // 
             this.btnDeselectAllTables.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDeselectAllTables.Location = new System.Drawing.Point(506, 407);
+            this.btnDeselectAllTables.Location = new System.Drawing.Point(627, 407);
             this.btnDeselectAllTables.Name = "btnDeselectAllTables";
             this.btnDeselectAllTables.Size = new System.Drawing.Size(111, 26);
             this.btnDeselectAllTables.TabIndex = 3;
@@ -543,24 +517,13 @@ namespace PLSQLImportFull.Forms
             // btnSelectAllTables
             // 
             this.btnSelectAllTables.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSelectAllTables.Location = new System.Drawing.Point(386, 407);
+            this.btnSelectAllTables.Location = new System.Drawing.Point(507, 407);
             this.btnSelectAllTables.Name = "btnSelectAllTables";
             this.btnSelectAllTables.Size = new System.Drawing.Size(111, 26);
             this.btnSelectAllTables.TabIndex = 2;
             this.btnSelectAllTables.Text = "Selecionar Todas";
             this.btnSelectAllTables.UseVisualStyleBackColor = true;
             this.btnSelectAllTables.Click += new System.EventHandler(this.btnSelectAllTables_Click);
-            // 
-            // btnRefreshTables
-            // 
-            this.btnRefreshTables.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRefreshTables.Location = new System.Drawing.Point(626, 407);
-            this.btnRefreshTables.Name = "btnRefreshTables";
-            this.btnRefreshTables.Size = new System.Drawing.Size(111, 26);
-            this.btnRefreshTables.TabIndex = 1;
-            this.btnRefreshTables.Text = "Atualizar Lista";
-            this.btnRefreshTables.UseVisualStyleBackColor = true;
-            this.btnRefreshTables.Click += new System.EventHandler(this.btnRefreshTables_Click);
             // 
             // btnTruncate
             // 
@@ -597,6 +560,7 @@ namespace PLSQLImportFull.Forms
             // 
             // tabImport
             // 
+            this.tabImport.Controls.Add(this.label7);
             this.tabImport.Controls.Add(this.lstImportFiles);
             this.tabImport.Controls.Add(this.btnSelectImportFiles);
             this.tabImport.Controls.Add(this.btnRunImport);
@@ -610,6 +574,17 @@ namespace PLSQLImportFull.Forms
             this.tabImport.TabIndex = 4;
             this.tabImport.Text = "4 - Importação";
             // 
+            // label7
+            // 
+            this.label7.BackColor = System.Drawing.Color.White;
+            this.label7.ForeColor = System.Drawing.SystemColors.AppWorkspace;
+            this.label7.Location = new System.Drawing.Point(309, 130);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(128, 25);
+            this.label7.TabIndex = 12;
+            this.label7.Text = "Arraste e solte se preferir";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // lstImportFiles
             // 
             this.lstImportFiles.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -617,7 +592,7 @@ namespace PLSQLImportFull.Forms
             this.lstImportFiles.FormattingEnabled = true;
             this.lstImportFiles.Location = new System.Drawing.Point(9, 55);
             this.lstImportFiles.Name = "lstImportFiles";
-            this.lstImportFiles.Size = new System.Drawing.Size(729, 121);
+            this.lstImportFiles.Size = new System.Drawing.Size(729, 173);
             this.lstImportFiles.TabIndex = 0;
             // 
             // btnSelectImportFiles
@@ -634,7 +609,7 @@ namespace PLSQLImportFull.Forms
             this.btnRunImport.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRunImport.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnRunImport.Location = new System.Drawing.Point(8, 391);
+            this.btnRunImport.Location = new System.Drawing.Point(9, 391);
             this.btnRunImport.Name = "btnRunImport";
             this.btnRunImport.Size = new System.Drawing.Size(729, 40);
             this.btnRunImport.TabIndex = 2;
@@ -658,6 +633,32 @@ namespace PLSQLImportFull.Forms
             this.label5.Size = new System.Drawing.Size(188, 13);
             this.label5.TabIndex = 7;
             this.label5.Text = "Selecione as tabelas para Importação:";
+            // 
+            // lblLog
+            // 
+            this.lblLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblLog.AutoSize = true;
+            this.lblLog.Location = new System.Drawing.Point(8, 237);
+            this.lblLog.Name = "lblLog";
+            this.lblLog.Size = new System.Drawing.Size(94, 13);
+            this.lblLog.TabIndex = 10;
+            this.lblLog.Text = "Log de Execução:";
+            // 
+            // rtbImportLog
+            // 
+            this.rtbImportLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.rtbImportLog.BackColor = System.Drawing.Color.Black;
+            this.rtbImportLog.Font = new System.Drawing.Font("Consolas", 9F);
+            this.rtbImportLog.Location = new System.Drawing.Point(9, 255);
+            this.rtbImportLog.Name = "rtbImportLog";
+            this.rtbImportLog.ReadOnly = true;
+            this.rtbImportLog.Size = new System.Drawing.Size(729, 130);
+            this.rtbImportLog.TabIndex = 11;
+            this.rtbImportLog.Text = "";
             // 
             // tabRestore
             // 
@@ -1178,7 +1179,6 @@ namespace PLSQLImportFull.Forms
         private System.Windows.Forms.CheckedListBox checkedListTables;
         private System.Windows.Forms.Button btnDeselectAllTables;
         private System.Windows.Forms.Button btnSelectAllTables;
-        private System.Windows.Forms.Button btnRefreshTables;
         private System.Windows.Forms.Button btnTruncate;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TabPage tabEnableConstraints;
@@ -1214,8 +1214,6 @@ namespace PLSQLImportFull.Forms
         private System.Windows.Forms.Button btnSelectImportFiles;
         private System.Windows.Forms.Button btnRunImport;
         private System.Windows.Forms.Button btnClearImportList;
-        private System.Windows.Forms.RichTextBox rtbImportLog; 
-        private System.Windows.Forms.Label lblLog;
         private System.Windows.Forms.TabPage tabMaintenance;
         private System.Windows.Forms.GroupBox grpMaintenanceActions;
         private System.Windows.Forms.CheckBox chkDisableAllTriggers;
@@ -1231,8 +1229,12 @@ namespace PLSQLImportFull.Forms
         private System.Windows.Forms.Button btnRunRestore;
         private System.Windows.Forms.Label lblRestoreInfo;
         private System.Windows.Forms.CheckBox chkResetSequences;
+        private System.Windows.Forms.Label lblDragDropHint;
         //private System.Windows.Forms.CheckBox chkResetSequences2;
         private Button button1;
         private CheckBox checkBox2;
+        private Label lblLog;
+        private RichTextBox rtbImportLog;
+        private Label label7;
     }
 }

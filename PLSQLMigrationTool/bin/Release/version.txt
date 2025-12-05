@@ -1,3 +1,5 @@
-5.0
+5.1
+
 +Abas de controle
 +Ordenar por linhas/nome na aba de Truncate
++Salva a última conexão nos campos

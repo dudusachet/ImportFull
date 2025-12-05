@@ -1,42 +1,9 @@
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\PLSQLImportFull.exe.config
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\PLSQLImportFull.exe
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\PLSQLImportFull.pdb
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\Microsoft.Bcl.AsyncInterfaces.dll
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\Oracle.ManagedDataAccess.dll
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Buffers.dll
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Diagnostics.DiagnosticSource.dll
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Formats.Asn1.dll
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Memory.dll
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Numerics.Vectors.dll
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Runtime.CompilerServices.Unsafe.dll
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Text.Encodings.Web.dll
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Text.Json.dll
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Threading.Tasks.Extensions.dll
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.ValueTuple.dll
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\Microsoft.Bcl.AsyncInterfaces.xml
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Buffers.xml
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Diagnostics.DiagnosticSource.xml
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Formats.Asn1.xml
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Memory.xml
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Numerics.Vectors.xml
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Runtime.CompilerServices.Unsafe.xml
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Text.Encodings.Web.xml
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Text.Json.xml
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.Threading.Tasks.Extensions.xml
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\bin\Release\System.ValueTuple.xml
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\obj\Release\PLSQLImportFull.csproj.AssemblyReference.cache
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\obj\Release\PLSQLImportFull.exe.config
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\obj\Release\PLSQLImportFull.Forms.MainForm.resources
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\obj\Release\PLSQLImportFull.Properties.Resources.resources
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\obj\Release\PLSQLImportFull.csproj.GenerateResource.cache
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\obj\Release\PLSQLImportFull.csproj.CoreCompileInputs.cache
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\obj\Release\PLSQLImp.DA55995C.Up2Date
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\obj\Release\PLSQLImportFull.exe
-C:\fullsoft\PLSQLMigration Tool-0.4.1\PLSQLMigrationTool\obj\Release\PLSQLImportFull.pdb
+C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\Resources\7za.exe
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\PLSQLImportFull.exe.config
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\PLSQLImportFull.exe
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\PLSQLImportFull.pdb
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\Microsoft.Bcl.AsyncInterfaces.dll
+C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\Newtonsoft.Json.dll
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\Oracle.ManagedDataAccess.dll
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\System.Buffers.dll
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\System.Diagnostics.DiagnosticSource.dll
@@ -49,6 +16,7 @@ C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\System.Text.Json.dl
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\System.Threading.Tasks.Extensions.dll
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\System.ValueTuple.dll
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\Microsoft.Bcl.AsyncInterfaces.xml
+C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\Newtonsoft.Json.xml
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\System.Buffers.xml
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\System.Diagnostics.DiagnosticSource.xml
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\System.Formats.Asn1.xml
@@ -60,6 +28,7 @@ C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\System.Text.Json.xm
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\System.Threading.Tasks.Extensions.xml
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\bin\Release\System.ValueTuple.xml
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.csproj.AssemblyReference.cache
+C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.exe.config
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.Forms.MainForm.resources
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.Properties.Resources.resources
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.csproj.GenerateResource.cache
@@ -67,4 +36,3 @@ C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.csp
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImp.DA55995C.Up2Date
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.exe
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.pdb
-C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.exe.config

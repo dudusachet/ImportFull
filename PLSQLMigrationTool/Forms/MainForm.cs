@@ -32,12 +32,20 @@ namespace PLSQLImportFull.Forms
         private List<ConstraintInfo> _allConstraints;
         private List<TableInfo> _allTables;
 
+
         public MainForm()
         {
             InitializeComponent();
 
             this.StartPosition = FormStartPosition.CenterScreen;
             this.MinimumSize = new System.Drawing.Size(780, 530);
+            this.lstImportFiles.AllowDrop = true;
+            this.lstImportFiles.DragEnter += LstImportFiles_DragEnter;
+            this.lstImportFiles.DragDrop += LstImportFiles_DragDrop;
+            this.label7.AllowDrop = true;
+            this.label7.DragEnter += LstImportFiles_DragEnter;
+            this.label7.DragDrop += LstImportFiles_DragDrop;
+
 
             // TRAVAR A STRING DE CONEXÃO COMPLETA
             this.txtConnectionString.ReadOnly = true;
@@ -64,6 +72,7 @@ namespace PLSQLImportFull.Forms
             // Eventos
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             this.tabControl.Selecting += new TabControlCancelEventHandler(this.tabControl_Selecting);
+            this.FormClosing += new FormClosingEventHandler(this.ExportForm_FormClosing);
 
             // Atualização automática da string
             txtHost.TextChanged += (s, e) => UpdateConnectionString();
@@ -76,26 +85,64 @@ namespace PLSQLImportFull.Forms
             UpdateConnectionString();
             UpdateConnectionStatus();
 
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.LastHost))
+            {
+                txtHost.Text = Properties.Settings.Default.LastHost;
+                txtPort.Text = Properties.Settings.Default.LastPort;
+                txtServiceName.Text = Properties.Settings.Default.LastService;
+                txtUserId.Text = Properties.Settings.Default.LastUser;
+                txtPassword.Text = Properties.Settings.Default.LastPassword;
+            }
+            else
+            {
 #if DEBUG
-            // Estes dados só aparecem quando você roda apertando F5 no Visual Studio (Debug)
-            txtHost.Text = "172.25.100.205";
-            txtPort.Text = "1521";
-            txtServiceName.Text = "XE";
-            txtUserId.Text = "r22sp15";
-            txtPassword.Text = "r22sp15";
-#else
-            // Estes dados aparecem quando você gera o executável final para o cliente (Release)
-            // Forçamos vazio para garantir que não vá nenhum dado sensível
-            txtHost.Text = "";
-            txtPort.Text = "";
-            txtServiceName.Text = "";
-            txtUserId.Text = "";
-            txtPassword.Text = "";
+                txtHost.Text = "172.25.100.205";
+                txtPort.Text = "1521";
+                txtServiceName.Text = "XE";
+                txtUserId.Text = "r22sp15";
+                txtPassword.Text = "r22sp15";
 #endif
+            }
+
+            UpdateConnectionStatus();
+            UpdateConnectionString();
+            AtualizarLabelArrastar();
         }
 
         #region Aba Conexão
+        private void ExportForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // 1. Desconecta se necessário
+            if (_connectionManager != null && _connectionManager.IsConnected)
+            {
+                _connectionManager.Disconnect();
+            }
 
+            // 2. Salva os dados dos campos nas configurações
+            Properties.Settings.Default.LastHost = txtHost.Text.Trim();
+            Properties.Settings.Default.LastPort = txtPort.Text.Trim();
+            Properties.Settings.Default.LastService = txtServiceName.Text.Trim();
+            Properties.Settings.Default.LastUser = txtUserId.Text.Trim();
+            Properties.Settings.Default.LastPassword = txtPassword.Text;
+
+            // 3. Grava no disco
+            Properties.Settings.Default.Save();
+        }
+
+        public class ConnectionProfile
+        {
+            public string Host { get; set; }
+            public string Port { get; set; }
+            public string Service { get; set; }
+            public string User { get; set; }
+            // Evite salvar senha em histórico por segurança, ou salve se for requisito interno
+
+            public override string ToString()
+            {
+                // O que vai aparecer no ComboBox
+                return $"{User}@{Host}:{Port}/{Service}";
+            }
+        }
         private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)
         {
             if (e.TabPage != tabConnection && !_connectionManager.IsConnected)
@@ -103,6 +150,29 @@ namespace PLSQLImportFull.Forms
                 e.Cancel = true;
                 MessageBox.Show("Por favor, conecte-se ao banco de dados primeiro.", "Acesso Negado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+        }
+
+        private void LstImportFiles_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.Copy;
+        }
+
+        private void LstImportFiles_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            foreach (string file in files)
+            {
+                // Aceita apenas .sql, .pdc ou .7z
+                string ext = Path.GetExtension(file).ToLower();
+                if (ext == ".sql" || ext == ".pdc" || ext == ".7z")
+                {
+                    if (!lstImportFiles.Items.Contains(file))
+                        lstImportFiles.Items.Add(file);
+                }
+            }
+            SetStatus($"{files.Length} arquivos adicionados via arraste.");
+            AtualizarLabelArrastar();
         }
 
         // --- ATUALIZA STATUS E TRAVA CAMPOS ---
@@ -281,6 +351,15 @@ namespace PLSQLImportFull.Forms
                 UpdateConnectionString();
             }
             catch (Exception ex) { MessageBox.Show("Erro ao processar string: " + ex.Message); }
+        }
+        private void AtualizarLabelArrastar()
+        {
+            // Se a lista estiver vazia (Count == 0), a label aparece (Visible = true)
+            // Se tiver arquivos, ela some (Visible = false)
+            label7.Visible = (lstImportFiles.Items.Count == 0);
+
+            // Dica: Se a label ficar por cima da lista, traz ela pra frente
+            if (label7.Visible) label7.BringToFront();
         }
 
         private void ImportarStringConexaoSimples(string rawString)
@@ -658,7 +737,9 @@ namespace PLSQLImportFull.Forms
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
                 ofd.Multiselect = true;
-                ofd.Filter = "SQL Files (*.sql;*.pdc)|*.sql;*.pdc|All Files (*.*)|*.*";
+                // --- ALTERAÇÃO AQUI: Adicionado *.7z no filtro ---
+                ofd.Filter = "Arquivos de Script (*.sql;*.pdc;*.7z)|*.sql;*.pdc;*.7z|Todos os Arquivos (*.*)|*.*";
+
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     foreach (string file in ofd.FileNames)
@@ -666,6 +747,7 @@ namespace PLSQLImportFull.Forms
                         if (!lstImportFiles.Items.Contains(file)) lstImportFiles.Items.Add(file);
                     }
                     SetStatus($"{lstImportFiles.Items.Count} arquivos na fila.");
+                    AtualizarLabelArrastar();
                 }
             }
         }
@@ -674,6 +756,7 @@ namespace PLSQLImportFull.Forms
         {
             lstImportFiles.Items.Clear();
             SetStatus("Lista de importação limpa.");
+            AtualizarLabelArrastar();
         }
         private void btnRunMaintenance_Click(object sender, EventArgs e)
         {
@@ -683,7 +766,7 @@ namespace PLSQLImportFull.Forms
             bool doTriggers = chkDisableAllTriggers.Checked;
             bool doConstraints = chkDisableFKAndCheck.Checked;
             bool doPurge = chkPurgeRecycleBin.Checked;
-            bool doStats = chkGatherStats.Checked;
+            bool doStats = checkBox2.Checked;
 
 
             // Verifica se NENHUMA opção foi marcada
@@ -901,7 +984,7 @@ namespace PLSQLImportFull.Forms
                     if (doSequences)
                     {
                         worker.ReportProgress(0, "Resetando Sequences...");
-                        _connectionManager.ExecuteNonQuery("BEGIN prc_wms_util_reset_sequence('S', 'S'); END;");
+                        _connectionManager.ExecuteNonQuery("BEGIN prc_wms_util_reset_sequence(gravar=>'S'); END;");
                     }
 
                     // D. Gerar Estatísticas (ADICIONADO)
@@ -990,6 +1073,7 @@ namespace PLSQLImportFull.Forms
 
 
         }
+
         public static bool VerificaAtu()
         {
             try
