@@ -67,3 +67,4 @@ C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.csp
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImp.DA55995C.Up2Date
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.exe
 C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.pdb
+C:\fullsoft\SQLImportFull-0.4\PLSQLMigrationTool\obj\Release\PLSQLImportFull.exe.config

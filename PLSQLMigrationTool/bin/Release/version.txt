@@ -1,4 +1,3 @@
 5.0
 +Abas de controle
 +Ordenar por linhas/nome na aba de Truncate
-teste

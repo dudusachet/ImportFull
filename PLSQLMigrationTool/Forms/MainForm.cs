@@ -645,7 +645,6 @@ namespace PLSQLImportFull.Forms
         {
             if (!_connectionManager.IsConnected) return;
             if (tabControl.SelectedTab.Text.Contains("Habilitar Constraints")) btnRefreshEnableConstraints_Click(sender, e);
-            //else if (tabControl.SelectedTab == tabExport) btnRefreshExportTables_Click(sender, e);
             else if (tabControl.SelectedTab == tabTruncate) btnRefreshTables_Click(sender, e);
             else if (tabControl.SelectedTab == tabConstraints) btnRefreshConstraints_Click(sender, e);
             else if (tabControl.SelectedTab == tabTriggers) btnRefreshTriggers_Click(sender, e);
@@ -852,10 +851,6 @@ namespace PLSQLImportFull.Forms
             // 1. Captura opções
             bool enableTriggers = chkEnableAllTriggers.Checked;
             bool enableConstraints = chkEnableFKAndCheck.Checked;
-
-            // Certifique-se que os nomes aqui batem com o Designer
-            // Se você usou chkResetSequences2 no designer, mude aqui.
-            // Pelo seu código enviado, parece ser chkResetSequences e chkGatherStats
             bool doSequences = chkResetSequences.Checked;
             bool doStats = chkGatherStats.Checked;
 
