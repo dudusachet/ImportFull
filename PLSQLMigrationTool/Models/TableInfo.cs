@@ -1,5 +1,3 @@
-using System;
-
 namespace PLSQLImportFull.Models
 {
     /// <summary>

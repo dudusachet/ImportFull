@@ -4,34 +4,19 @@ using Oracle.ManagedDataAccess.Client;
 
 namespace PLSQLImportFull.Data
 {
-    /// <summary>
-    /// Gerencia conexões com o banco de dados Oracle
-    /// </summary>
     public class OracleConnectionManager : IDisposable
     {
         private string _connectionString;
         private OracleConnection _connection;
-
-        /// <summary>
-        /// Obtém ou define a string de conexão
-        /// </summary>
         public string ConnectionString
         {
             get { return _connectionString; }
             set { _connectionString = value; }
         }
-
-        /// <summary>
-        /// Obtém a conexão atual
-        /// </summary>
         public OracleConnection Connection
         {
             get { return _connection; }
         }
-
-        /// <summary>
-        /// Verifica se está conectado
-        /// </summary>
         public bool IsConnected
         {
             get { return _connection != null && _connection.State == ConnectionState.Open; }
@@ -43,10 +28,6 @@ namespace PLSQLImportFull.Data
         {
             _connectionString = connectionString;
         }
-
-        /// <summary>
-        /// Testa a conexão com o banco de dados
-        /// </summary>
         public bool TestConnection()
         {
             try
@@ -62,10 +43,6 @@ namespace PLSQLImportFull.Data
                 return false;
             }
         }
-
-        /// <summary>
-        /// Abre uma conexão com o banco de dados
-        /// </summary>
         public void Connect()
         {
             // Se já estiver conectado, não faz nada
@@ -85,10 +62,6 @@ namespace PLSQLImportFull.Data
             _connection = new OracleConnection(_connectionString);
             _connection.Open();
         }
-
-        /// <summary>
-        /// Fecha a conexão com o banco de dados
-        /// </summary>
         public void Disconnect()
         {
             if (_connection != null)
@@ -101,26 +74,6 @@ namespace PLSQLImportFull.Data
                 _connection = null;
             }
         }
-
-        /// <summary>
-        /// Obtém uma nova conexão (para operações paralelas/threads)
-        /// </summary>
-        public OracleConnection GetNewConnection()
-        {
-            if (string.IsNullOrEmpty(_connectionString))
-            {
-                throw new InvalidOperationException("String de conexão não foi definida.");
-            }
-
-            OracleConnection newConn = new OracleConnection(_connectionString);
-            newConn.Open();
-            return newConn;
-        }
-
-        /// <summary>
-        /// Executa um comando SQL sem retorno (INSERT, UPDATE, DELETE, PL/SQL Block)
-        /// Útil para comandos rápidos como ALTER SESSION ou DBMS_STATS
-        /// </summary>
         public void ExecuteNonQuery(string sql)
         {
             if (!IsConnected)
@@ -133,10 +86,6 @@ namespace PLSQLImportFull.Data
                 cmd.ExecuteNonQuery();
             }
         }
-
-        /// <summary>
-        /// Libera recursos da classe (Implementação de IDisposable)
-        /// </summary>
         public void Dispose()
         {
             Disconnect();

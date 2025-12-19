@@ -3,43 +3,68 @@
   "WorkspaceRootPath": "C:\\fullsoft\\SQLImportFull-0.4\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\forms\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\forms\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\models\\triggerinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\models\\triggerinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\forms\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\forms\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\forms\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\forms\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|c:\\fullsoft\\sqlimportfull-0.4\\plsqlmigrationtool\\data\\oraclequeryexecutor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\data\\oraclequeryexecutor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\models\\tableinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\models\\tableinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\forms\\mainform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\forms\\mainform.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\data\\metadatarepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\data\\metadatarepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\models\\constraintinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\models\\constraintinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{00000000-0000-0000-0000-000000000000}|\u003CSolution\u003E|PLSQLImportFull||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|c:\\fullsoft\\sqlimportfull-0.4\\plsqlmigrationtool\\business\\importmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\business\\importmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\packages.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\packages.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\data\\oracleconnectionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\data\\oracleconnectionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\data\\metadatarepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\data\\metadatarepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\business\\triggermanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\business\\triggermanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\business\\tablemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\business\\tablemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\business\\importmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\business\\importmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\business\\constraintmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\business\\constraintmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|C:\\fullsoft\\SQLImportFull-0.4\\plsqlmigrationtool\\forms\\mainform.resx||{81828910-B8B3-4D2B-99A3-067027C180C1}",
-      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\forms\\mainform.resx||{81828910-B8B3-4D2B-99A3-067027C180C1}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|c:\\fullsoft\\sqlimportfull-0.4\\plsqlmigrationtool\\properties\\settings.settings||{6D2695F9-5365-4A78-89ED-F205C045BFE6}",
-      "RelativeMoniker": "D:0:0:{8A7F9C3D-1E4B-4C2A-9F3E-5D6B7C8A9E0F}|PLSQLMigrationTool\\PLSQLImportFull.csproj|solutionrelative:plsqlmigrationtool\\properties\\settings.settings||{6D2695F9-5365-4A78-89ED-F205C045BFE6}"
     }
   ],
   "DocumentGroupContainers": [
@@ -49,7 +74,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -57,83 +82,147 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "PLSQLImportFull",
-              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\PLSQLImportFull.csproj",
-              "RelativeDocumentMoniker": "PLSQLMigrationTool\\PLSQLImportFull.csproj",
-              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\PLSQLImportFull.csproj",
-              "RelativeToolTip": "PLSQLMigrationTool\\PLSQLImportFull.csproj",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2025-12-05T17:35:41.481Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "ImportManager.cs",
-              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Business\\ImportManager.cs",
-              "RelativeDocumentMoniker": "PLSQLMigrationTool\\Business\\ImportManager.cs",
-              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Business\\ImportManager.cs",
-              "RelativeToolTip": "PLSQLMigrationTool\\Business\\ImportManager.cs",
-              "ViewState": "AgIAAEAAAAAAAAAAAAApwEEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-03T16:37:37.834Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "MetadataRepository.cs",
-              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Data\\MetadataRepository.cs",
-              "RelativeDocumentMoniker": "PLSQLMigrationTool\\Data\\MetadataRepository.cs",
-              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Data\\MetadataRepository.cs",
-              "RelativeToolTip": "PLSQLMigrationTool\\Data\\MetadataRepository.cs",
-              "ViewState": "AgIAABIAAAAAAAAAAAAAABkAAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-03T16:37:10.989Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "TriggerInfo.cs",
+              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Models\\TriggerInfo.cs",
+              "RelativeDocumentMoniker": "PLSQLMigrationTool\\Models\\TriggerInfo.cs",
+              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Models\\TriggerInfo.cs",
+              "RelativeToolTip": "PLSQLMigrationTool\\Models\\TriggerInfo.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-11T19:13:37.341Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
               "Title": "MainForm.cs",
               "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Forms\\MainForm.cs",
               "RelativeDocumentMoniker": "PLSQLMigrationTool\\Forms\\MainForm.cs",
               "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Forms\\MainForm.cs",
               "RelativeToolTip": "PLSQLMigrationTool\\Forms\\MainForm.cs",
-              "ViewState": "AgIAAFEEAAAAAAAAAAAvwGcEAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAIcAAAAAAAAAAAAowJMAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-03T13:27:13.919Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "MainForm.cs [Design]",
-              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Forms\\MainForm.cs",
-              "RelativeDocumentMoniker": "PLSQLMigrationTool\\Forms\\MainForm.cs",
-              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Forms\\MainForm.cs [Design]",
-              "RelativeToolTip": "PLSQLMigrationTool\\Forms\\MainForm.cs [Design]",
+              "DocumentIndex": 5,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Program.cs",
+              "RelativeDocumentMoniker": "PLSQLMigrationTool\\Program.cs",
+              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Program.cs",
+              "RelativeToolTip": "PLSQLMigrationTool\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-03T13:10:43.638Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-11T18:36:47.553Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 6,
               "Title": "MainForm.Designer.cs",
               "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Forms\\MainForm.Designer.cs",
               "RelativeDocumentMoniker": "PLSQLMigrationTool\\Forms\\MainForm.Designer.cs",
               "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Forms\\MainForm.Designer.cs",
               "RelativeToolTip": "PLSQLMigrationTool\\Forms\\MainForm.Designer.cs",
-              "ViewState": "AgIAAEIEAAAAAAAAAAApwFQEAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAAAGIAAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-03T13:13:28.049Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 2,
+              "Title": "MainForm.cs [Design]",
+              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Forms\\MainForm.cs",
+              "RelativeDocumentMoniker": "PLSQLMigrationTool\\Forms\\MainForm.cs",
+              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Forms\\MainForm.cs [Design]",
+              "RelativeToolTip": "PLSQLMigrationTool\\Forms\\MainForm.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-11T17:27:13.696Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "OracleQueryExecutor.cs",
+              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Data\\OracleQueryExecutor.cs",
+              "RelativeDocumentMoniker": "PLSQLMigrationTool\\Data\\OracleQueryExecutor.cs",
+              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Data\\OracleQueryExecutor.cs",
+              "RelativeToolTip": "PLSQLMigrationTool\\Data\\OracleQueryExecutor.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAABiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T19:06:03.272Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "TableInfo.cs",
+              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Models\\TableInfo.cs",
+              "RelativeDocumentMoniker": "PLSQLMigrationTool\\Models\\TableInfo.cs",
+              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Models\\TableInfo.cs",
+              "RelativeToolTip": "PLSQLMigrationTool\\Models\\TableInfo.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T19:06:13.073Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ConstraintInfo.cs",
+              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Models\\ConstraintInfo.cs",
+              "RelativeDocumentMoniker": "PLSQLMigrationTool\\Models\\ConstraintInfo.cs",
+              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Models\\ConstraintInfo.cs",
+              "RelativeToolTip": "PLSQLMigrationTool\\Models\\ConstraintInfo.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T19:06:11.745Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "App.config",
+              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\App.config",
+              "RelativeDocumentMoniker": "PLSQLMigrationTool\\App.config",
+              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\App.config",
+              "RelativeToolTip": "PLSQLMigrationTool\\App.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2025-12-11T19:20:05.823Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "OracleConnectionManager.cs",
+              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Data\\OracleConnectionManager.cs",
+              "RelativeDocumentMoniker": "PLSQLMigrationTool\\Data\\OracleConnectionManager.cs",
+              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Data\\OracleConnectionManager.cs",
+              "RelativeToolTip": "PLSQLMigrationTool\\Data\\OracleConnectionManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFcAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-11T19:12:30.383Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "MetadataRepository.cs",
+              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Data\\MetadataRepository.cs",
+              "RelativeDocumentMoniker": "PLSQLMigrationTool\\Data\\MetadataRepository.cs",
+              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Data\\MetadataRepository.cs",
+              "RelativeToolTip": "PLSQLMigrationTool\\Data\\MetadataRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGgAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-11T12:12:45.957Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
               "Title": "packages.config",
               "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\packages.config",
               "RelativeDocumentMoniker": "PLSQLMigrationTool\\packages.config",
@@ -141,33 +230,55 @@
               "RelativeToolTip": "PLSQLMigrationTool\\packages.config",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
-              "WhenOpened": "2025-12-04T18:39:21.382Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-04T18:39:21.382Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 12,
+              "Title": "TriggerManager.cs",
+              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Business\\TriggerManager.cs",
+              "RelativeDocumentMoniker": "PLSQLMigrationTool\\Business\\TriggerManager.cs",
+              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Business\\TriggerManager.cs",
+              "RelativeToolTip": "PLSQLMigrationTool\\Business\\TriggerManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-11T18:26:57.795Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "TableManager.cs",
+              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Business\\TableManager.cs",
+              "RelativeDocumentMoniker": "PLSQLMigrationTool\\Business\\TableManager.cs",
+              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Business\\TableManager.cs",
+              "RelativeToolTip": "PLSQLMigrationTool\\Business\\TableManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T19:05:52.19Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "ImportManager.cs",
+              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Business\\ImportManager.cs",
+              "RelativeDocumentMoniker": "PLSQLMigrationTool\\Business\\ImportManager.cs",
+              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Business\\ImportManager.cs",
+              "RelativeToolTip": "PLSQLMigrationTool\\Business\\ImportManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-03T16:37:37.834Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
               "Title": "ConstraintManager.cs",
               "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Business\\ConstraintManager.cs",
               "RelativeDocumentMoniker": "PLSQLMigrationTool\\Business\\ConstraintManager.cs",
               "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Business\\ConstraintManager.cs",
               "RelativeToolTip": "PLSQLMigrationTool\\Business\\ConstraintManager.cs",
-              "ViewState": "AgIAACMAAAAAAAAAAABgwEoAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-03T16:37:21.79Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "MainForm.resx",
-              "DocumentMoniker": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Forms\\MainForm.resx",
-              "RelativeDocumentMoniker": "PLSQLMigrationTool\\Forms\\MainForm.resx",
-              "ToolTip": "C:\\fullsoft\\SQLImportFull-0.4\\PLSQLMigrationTool\\Forms\\MainForm.resx",
-              "RelativeToolTip": "PLSQLMigrationTool\\Forms\\MainForm.resx",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001005|",
-              "WhenOpened": "2025-12-05T14:19:30.365Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-03T16:37:21.79Z"
             }
           ]
         }

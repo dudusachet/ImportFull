@@ -5,32 +5,22 @@ using PLSQLImportFull.Models;
 
 namespace PLSQLImportFull.Data
 {
-    /// <summary>
-    /// Repositório para consultas ao dicionário de dados Oracle
-    /// </summary>
     public class MetadataRepository
     {
         private OracleQueryExecutor _queryExecutor;
-
-        /// <summary>
-        /// Construtor
-        /// </summary>
-        /// <param name="queryExecutor">Executor de queries</param>
         public MetadataRepository(OracleQueryExecutor queryExecutor)
         {
             _queryExecutor = queryExecutor ?? throw new ArgumentNullException(nameof(queryExecutor));
         }
-
-        /// <summary>
-        /// Obtém lista de todas as triggers do usuário
-        /// </summary>
-        /// <returns>Lista de TriggerInfo</returns>
-        public List<TriggerInfo> GetAllTriggers()
+        public List<TriggerInfo> GetAllTriggers(bool enabled)
         {
-            string query = @"
-                SELECT TRIGGER_NAME, TABLE_NAME, STATUS, TRIGGER_TYPE, TRIGGERING_EVENT
-                FROM USER_TRIGGERS
-                ORDER BY TABLE_NAME, TRIGGER_NAME";
+            var statusCondition = enabled ? "ENABLED" : "DISABLED";
+
+            string query = $@"
+SELECT TRIGGER_NAME, TABLE_NAME, STATUS, TRIGGER_TYPE, TRIGGERING_EVENT
+  FROM USER_TRIGGERS
+ WHERE STATUS = '{statusCondition}'
+ORDER BY TABLE_NAME, TRIGGER_NAME";
 
             DataTable dt = _queryExecutor.ExecuteQuery(query);
             List<TriggerInfo> triggers = new List<TriggerInfo>();
@@ -49,24 +39,22 @@ namespace PLSQLImportFull.Data
 
             return triggers;
         }
-
-        /// <summary>
-        /// Obtém lista de todas as constraints do usuário
-        /// </summary>
-        /// <returns>Lista de ConstraintInfo</returns>
-        public List<ConstraintInfo> GetAllConstraints()
+        public List<ConstraintInfo> GetAllConstraints(bool enabled)
         {
-            string query = @"
-                SELECT 
-                    CONSTRAINT_NAME, 
-                    TABLE_NAME, 
-                    CONSTRAINT_TYPE, 
-                    STATUS,
-                    SEARCH_CONDITION,
-                    R_CONSTRAINT_NAME
-                FROM USER_CONSTRAINTS
-                WHERE CONSTRAINT_TYPE IN ('P', 'R', 'U', 'C')
-                ORDER BY TABLE_NAME, CONSTRAINT_NAME";
+            string status = enabled ? "ENABLED" : "DISABLED";
+            string type = enabled ? "'R','C'" : "'P','U','R','C'";
+            string query = $@"
+SELECT  
+    CONSTRAINT_NAME, 
+    TABLE_NAME, 
+    CONSTRAINT_TYPE, 
+    STATUS,
+    SEARCH_CONDITION,
+    R_CONSTRAINT_NAME
+FROM USER_CONSTRAINTS
+WHERE CONSTRAINT_TYPE IN ({type})
+  AND STATUS = '{status}' 
+ORDER BY TABLE_NAME, CONSTRAINT_NAME";
 
             DataTable dt = _queryExecutor.ExecuteQuery(query);
             List<ConstraintInfo> constraints = new List<ConstraintInfo>();
@@ -90,11 +78,6 @@ namespace PLSQLImportFull.Data
 
             return constraints;
         }
-
-        /// <summary>
-        /// Obtém lista de todas as tabelas do usuário
-        /// </summary>
-        /// <returns>Lista de TableInfo</returns>
         public List<TableInfo> GetAllTables()
         {
             string query = @"
@@ -120,48 +103,6 @@ namespace PLSQLImportFull.Data
 
             return tables;
         }
-
-        /// <summary>
-        /// Obtém o DDL de uma tabela
-        /// </summary>
-        /// <param name="tableName">Nome da tabela</param>
-        /// <returns>Script DDL</returns>
-        public string GetTableDDL(string tableName)
-        {
-            try
-            {
-                string query = $"SELECT DBMS_METADATA.GET_DDL('TABLE', '{tableName}') FROM DUAL";
-                object result = _queryExecutor.ExecuteScalar(query);
-                return result != null ? result.ToString() : string.Empty;
-            }
-            catch (Exception ex)
-            {
-                return $"-- Erro ao obter DDL: {ex.Message}";
-            }
-        }
-
-        /// <summary>
-        /// Obtém o DDL de uma constraint
-        /// </summary>
-        /// <param name="constraintName">Nome da constraint</param>
-        /// <returns>Script DDL</returns>
-        public string GetConstraintDDL(string constraintName)
-        {
-            try
-            {
-                string query = $"SELECT DBMS_METADATA.GET_DDL('CONSTRAINT', '{constraintName}') FROM DUAL";
-                object result = _queryExecutor.ExecuteScalar(query);
-                return result != null ? result.ToString() : string.Empty;
-            }
-            catch (Exception ex)
-            {
-                return $"-- Erro ao obter DDL: {ex.Message}";
-            }
-        }
-
-        /// <summary>
-        /// Obtém descrição do tipo de constraint
-        /// </summary>
         private string GetConstraintTypeDescription(string type)
         {
             switch (type)

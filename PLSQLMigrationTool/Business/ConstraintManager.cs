@@ -1,42 +1,24 @@
-using System;
-using System.Collections.Generic;
 using PLSQLImportFull.Data;
 using PLSQLImportFull.Models;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace PLSQLImportFull.Business
 {
-    /// <summary>
-    /// Gerencia operações com constraints do banco de dados
-    /// </summary>
     public class ConstraintManager
     {
         private OracleQueryExecutor _queryExecutor;
         private MetadataRepository _metadataRepository;
-
-        /// <summary>
-        /// Construtor
-        /// </summary>
-        /// <param name="queryExecutor">Executor de queries</param>
-        /// <param name="metadataRepository">Repositório de metadados</param>
         public ConstraintManager(OracleQueryExecutor queryExecutor, MetadataRepository metadataRepository)
         {
             _queryExecutor = queryExecutor ?? throw new ArgumentNullException(nameof(queryExecutor));
             _metadataRepository = metadataRepository ?? throw new ArgumentNullException(nameof(metadataRepository));
         }
-
-        /// <summary>
-        /// Obtém lista de todas as constraints
-        /// </summary>
-        /// <returns>Lista de ConstraintInfo</returns>
-        public List<ConstraintInfo> GetAllConstraints()
+        public List<ConstraintInfo> GetAllConstraints(bool enabled)
         {
-            return _metadataRepository.GetAllConstraints();
+            return _metadataRepository.GetAllConstraints(enabled);
         }
-
-        /// <summary>
-        /// Desabilita uma constraint
-        /// </summary>
-        /// <param name="constraint">Informações da constraint</param>
         public void DisableConstraint(ConstraintInfo constraint)
         {
             if (constraint == null)
@@ -53,31 +35,6 @@ namespace PLSQLImportFull.Business
             _queryExecutor.ExecuteNonQuery(command);
         }
 
-        /// <summary>
-        /// Habilita uma constraint
-        /// </summary>
-        /// <param name="constraint">Informações da constraint</param>
-        public void EnableConstraint(ConstraintInfo constraint)
-        {
-            if (constraint == null)
-            {
-                throw new ArgumentNullException(nameof(constraint));
-            }
-
-            if (string.IsNullOrEmpty(constraint.TableName) || string.IsNullOrEmpty(constraint.ConstraintName))
-            {
-                throw new ArgumentException("Nome da tabela e constraint não podem ser vazios.");
-            }
-
-            string command = $"ALTER TABLE {constraint.TableName} ENABLE CONSTRAINT {constraint.ConstraintName}";
-            _queryExecutor.ExecuteNonQuery(command);
-        }
-
-        /// <summary>
-        /// Desabilita múltiplas constraints
-        /// </summary>
-        /// <param name="constraints">Lista de constraints</param>
-        /// <returns>Número de constraints desabilitadas com sucesso</returns>
         public int DisableConstraints(List<ConstraintInfo> constraints)
         {
             if (constraints == null || constraints.Count == 0)
@@ -108,77 +65,44 @@ namespace PLSQLImportFull.Business
 
             return successCount;
         }
-
-        /// <summary>
-        /// Habilita múltiplas constraints
-        /// </summary>
-        /// <param name="constraints">Lista de constraints</param>
-        /// <returns>Número de constraints habilitadas com sucesso</returns>
         public int EnableConstraints(List<ConstraintInfo> constraints)
         {
-            if (constraints == null || constraints.Count == 0)
-            {
-                return 0;
-            }
-
             int successCount = 0;
-            List<string> errors = new List<string>();
+            StringBuilder errorReport = new StringBuilder();
 
-            foreach (ConstraintInfo constraint in constraints)
+            foreach (var c in constraints)
             {
                 try
                 {
-                    EnableConstraint(constraint);
+                    // Tenta habilitar usando NOVALIDATE (mais rápido e tolerante a dados antigos)
+                    // Se a constraint não existir mais (foi dropada), vai gerar erro aqui
+                    string sql = $"ALTER TABLE {c.TableName} ENABLE NOVALIDATE CONSTRAINT {c.ConstraintName}";
+                    _queryExecutor.ExecuteNonQuery(sql);
                     successCount++;
                 }
                 catch (Exception ex)
                 {
-                    errors.Add($"Erro ao habilitar constraint {constraint.ConstraintName}: {ex.Message}");
+                    // Filtra erros irrelevantes
+                    // ORA-02430: constraint não existe (acontece se você dropou as checks de usuario/maquina antes)
+                    if (ex.Message.Contains("ORA-02430"))
+                    {
+                        // Apenas ignora, pois se não existe, não precisa habilitar
+                        continue;
+                    }
+
+                    // Se for outro erro (ex: ORA-02298 - Pai não encontrado), adiciona ao relatório
+                    errorReport.AppendLine($"[FALHA] {c.TableName}.{c.ConstraintName}: {ex.Message}");
                 }
             }
 
-            if (errors.Count > 0)
+            // Se houve erros reais, lança uma exceção para o MainForm mostrar na tela
+            if (errorReport.Length > 0)
             {
-                throw new Exception($"Algumas constraints não puderam ser habilitadas:\n{string.Join("\n", errors)}");
+                // Adiciona um cabeçalho ao erro
+                string finalMsg = $"Habilitadas: {successCount}/{constraints.Count}\n\nERROS ENCONTRADOS:\n{errorReport.ToString()}";
+                throw new Exception(finalMsg);
             }
-
             return successCount;
-        }
-
-        /// <summary>
-        /// Desabilita todas as constraints de uma tabela
-        /// </summary>
-        /// <param name="tableName">Nome da tabela</param>
-        public void DisableAllTableConstraints(string tableName)
-        {
-            if (string.IsNullOrEmpty(tableName))
-            {
-                throw new ArgumentException("Nome da tabela não pode ser vazio.", nameof(tableName));
-            }
-
-            // Obter todas as constraints da tabela
-            List<ConstraintInfo> allConstraints = GetAllConstraints();
-            List<ConstraintInfo> tableConstraints = allConstraints.FindAll(c => c.TableName == tableName);
-
-            DisableConstraints(tableConstraints);
-        }
-
-        /// <summary>
-        /// Habilita todas as constraints de uma tabela
-        /// </summary>
-        /// <param name="tableName">Nome da tabela</param>
-        public void EnableAllTableConstraints(string tableName)
-        {
-            if (string.IsNullOrEmpty(tableName))
-            {
-                throw new ArgumentException("Nome da tabela não pode ser vazio.", nameof(tableName));
-            }
-
-            // Obter todas as constraints da tabela
-            List<ConstraintInfo> allConstraints = GetAllConstraints();
-            List<ConstraintInfo> tableConstraints = allConstraints.FindAll(c => c.TableName == tableName);
-
-            EnableConstraints(tableConstraints);
         }
     }
 }

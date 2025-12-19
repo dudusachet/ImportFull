@@ -1,5 +1,3 @@
-using System;
-
 namespace PLSQLImportFull.Models
 {
     /// <summary>
@@ -32,20 +30,5 @@ namespace PLSQLImportFull.Models
         /// </summary>
         public string TriggeringEvent { get; set; }
 
-        /// <summary>
-        /// Verifica se a trigger está habilitada
-        /// </summary>
-        public bool IsEnabled
-        {
-            get { return Status != null && Status.Equals("ENABLED", StringComparison.OrdinalIgnoreCase); }
-        }
-
-        /// <summary>
-        /// Retorna representação em string
-        /// </summary>
-        public override string ToString()
-        {
-            return $"{TriggerName} ({TableName}) - {Status}";
-        }
     }
 }
