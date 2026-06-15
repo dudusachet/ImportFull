@@ -105,7 +105,7 @@ ORDER BY TABLE_NAME, CONSTRAINT_NAME";
         }
         private string GetConstraintTypeDescription(string type)
         {
-            switch (type)
+            switch (type) 
             {
                 case "P":
                     return "Primary Key";

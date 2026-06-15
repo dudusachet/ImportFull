@@ -16,7 +16,14 @@ namespace PLSQLImportFull.Business
         }
         public List<TableInfo> GetAllTables()
         {
-            return _metadataRepository.GetAllTables();
+            var tables = _metadataRepository.GetAllTables();
+
+            if (tables != null)
+            {
+                tables.RemoveAll(t => t.TableName.Equals("GER_DDL_LOG", StringComparison.OrdinalIgnoreCase));
+            }
+
+            return tables;
         }
         public void TruncateTable(string tableName)
         {
@@ -40,6 +47,12 @@ namespace PLSQLImportFull.Business
 
             foreach (string tableName in tableNames)
             {
+                // --- NOVA REGRA 1: Ignorar a GER_DDL_LOG silenciosamente ---
+                if (tableName.Equals("GER_DDL_LOG", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue; // Pula para a próxima tabela sem fazer nada
+                }
+
                 try
                 {
                     TruncateTable(tableName);
@@ -47,6 +60,13 @@ namespace PLSQLImportFull.Business
                 }
                 catch (Exception ex)
                 {
+                    // --- NOVA REGRA 2: Ignorar se a tabela não existe ---
+                    if (ex.Message.Contains("ORA-00942"))
+                    {
+                        continue; // Apenas ignora o erro e não joga na tela
+                    }
+
+                    // Se for um erro grave de verdade (ex: banco caiu), aí sim guarda o erro
                     errors.Add($"Erro ao truncar tabela {tableName}: {ex.Message}");
                 }
             }

@@ -28,6 +28,41 @@ namespace PLSQLImportFull.Data
         {
             _connectionString = connectionString;
         }
+
+        // Adicione estes métodos dentro da classe OracleConnectionManager
+
+        /// <summary>
+        /// Executa um SELECT e retorna um DataTable
+        /// </summary>
+        public DataTable ExecuteQuery(string query)
+        {
+            if (_connection == null || _connection.State != ConnectionState.Open)
+                throw new Exception("Conexão não está aberta.");
+
+            using (OracleCommand cmd = new OracleCommand(query, _connection))
+            {
+                using (OracleDataAdapter da = new OracleDataAdapter(cmd))
+                {
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+                    return dt;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Executa comandos sem retorno (UPDATE, DELETE, ALTER, INSERT)
+        /// </summary>
+        public void ExecuteNonQuery(string commandText)
+        {
+            if (_connection == null || _connection.State != ConnectionState.Open)
+                throw new Exception("Conexão não está aberta.");
+
+            using (OracleCommand cmd = new OracleCommand(commandText, _connection))
+            {
+                cmd.ExecuteNonQuery();
+            }
+        }
         public bool TestConnection()
         {
             try
@@ -72,18 +107,6 @@ namespace PLSQLImportFull.Data
                 }
                 _connection.Dispose();
                 _connection = null;
-            }
-        }
-        public void ExecuteNonQuery(string sql)
-        {
-            if (!IsConnected)
-                throw new InvalidOperationException("Banco desconectado.");
-
-            using (OracleCommand cmd = _connection.CreateCommand())
-            {
-                cmd.CommandText = sql;
-                cmd.CommandType = CommandType.Text;
-                cmd.ExecuteNonQuery();
             }
         }
         public void Dispose()

@@ -4,6 +4,7 @@ using PLSQLImportFull.Data;
 using PLSQLImportFull.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -178,43 +179,6 @@ namespace PLSQLImportFull.Forms
         // ===================================================================================
         // LÓGICA VISUAL MODERNA (Aplicada no Load para garantir que o Windows obedeça)
         // ===================================================================================
-        //protected override void OnLoad(EventArgs e)
-        //{
-        //    base.OnLoad(e);
-
-        //    // Aplica a customização visual em TODAS as listas do sistema
-        //    ConfigurarListaModerna(checkedListTables);
-        //    ConfigurarListaModerna(checkedListTriggers);
-        //    ConfigurarListaModerna(checkedListConstraints);
-        //    ConfigurarListaModerna(checkedListEnableConstraints);
-        //    ConfigurarListaModerna(lstImportFiles);
-
-        //    // REMOVIDO DAQUI POIS JÁ ESTÁ NO MAINFORM_LOAD
-        //    // validatorbtn(this, EventArgs.Empty); 
-        //}
-
-        private void ConfigurarListaModerna(ListBox list)
-        {
-            if (list == null) return;
-
-            // Remove bordas 3D
-            list.BorderStyle = BorderStyle.None;
-            list.BackColor = Color.White;
-            list.ForeColor = Color.FromArgb(49, 49, 48);
-            list.Font = new Font("Segoe UI", 10F, FontStyle.Regular);
-            list.ItemHeight = 28; // Altura confortável
-
-            // Se for CheckedListBox, configura clique único
-            if (list is CheckedListBox chkList)
-            {
-                chkList.CheckOnClick = true;
-            }
-
-            // ATIVA PINTURA MANUAL (Mata o azul do Windows)
-            list.DrawMode = DrawMode.OwnerDrawFixed;
-            list.DrawItem -= General_DrawItem;
-            list.DrawItem += General_DrawItem;
-        }
 
         private void General_DrawItem(object sender, DrawItemEventArgs e)
         {
@@ -225,10 +189,10 @@ namespace PLSQLImportFull.Forms
             CheckedListBox chkList = list as CheckedListBox;
 
             // --- CORES DO TEMA ---
-            Color corTexto = Color.FromArgb(49, 49, 48);          // Cinza Chumbo
+            Color corTexto = Color.FromArgb(49, 49, 48);           // Cinza Chumbo
             Color corFundoNormal = Color.White;                    // Branco
             Color corFundoSelecao = Color.FromArgb(245, 246, 250); // Cinza MUITO claro (Substitui o Azul)
-            Color corDestaque = Color.FromArgb(229, 35, 41);      // Vermelho (para bordas/detalhes se quiser)
+            Color corDestaque = Color.FromArgb(229, 35, 41);       // Vermelho (para bordas/detalhes se quiser)
 
             // 1. PINTAR O FUNDO
             bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
@@ -289,8 +253,8 @@ namespace PLSQLImportFull.Forms
         private void AplicarEstiloModerno()
         {
 
-            Color corVermelha = Color.FromArgb(229, 35, 41); //Vermelho Fullsoft
-            Color corAzul = Color.FromArgb(13, 128, 191); // Azul G
+            Color corVermelha = Color.FromArgb(229, 35, 41);  //Vermelho Fullsoft
+            Color corAzul = Color.FromArgb(13, 128, 191);     // Azul G
             Color corTexto = Color.FromArgb(49, 49, 48);      // Cinza Escuro
             Color corFundo = Color.FromArgb(245, 246, 250);   // Off-White
 
@@ -663,28 +627,6 @@ namespace PLSQLImportFull.Forms
             txtConnectionString.Text = BuildConnectionString();
         }
 
-        private void btnTestConnection_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                UpdateConnectionString();
-                SetStatus("Testando conexão...");
-                _connectionManager.ConnectionString = txtConnectionString.Text.Trim();
-
-                if (_connectionManager.TestConnection())
-                {
-                    MessageBox.Show("Conexão OK!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    SetStatus("OK");
-                }
-                else
-                {
-                    MessageBox.Show("Falha na conexão.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    SetStatus("Falha");
-                }
-            }
-            catch (Exception ex) { MessageBox.Show("Erro: " + ex.Message); }
-        }
-
         private void btnConnect_Click(object sender, EventArgs e)
         {
             try
@@ -842,8 +784,21 @@ namespace PLSQLImportFull.Forms
             {
                 List<ConstraintInfo> list = new List<ConstraintInfo>();
                 foreach (ConstraintInfo c in checkedListConstraints.CheckedItems) list.Add(c);
-                int count = _constraintManager.EnableConstraints(list);
-                MessageBox.Show($"{count} constraints habilitadas.");
+
+                // MUDANÇA: Captura os erros
+                string errosConstraints;
+                int count = _constraintManager.EnableConstraints(list, out errosConstraints);
+
+                // MUDANÇA: Mostra o popup se deu erro, senão mostra a mensagem de sucesso normal
+                if (!string.IsNullOrEmpty(errosConstraints))
+                {
+                    MessageBox.Show(errosConstraints, "Aviso: Falhas em Constraints", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    MessageBox.Show($"{count} constraints habilitadas com sucesso.");
+                }
+
                 btnRefreshConstraints_Click(sender, e);
             }
             catch (Exception ex) { MessageBox.Show("Erro: " + ex.Message); }
@@ -972,8 +927,21 @@ namespace PLSQLImportFull.Forms
             {
                 List<ConstraintInfo> list = new List<ConstraintInfo>();
                 foreach (ConstraintInfo c in checkedListEnableConstraints.CheckedItems) list.Add(c);
-                int count = _constraintManager.EnableConstraints(list);
-                MessageBox.Show($"{count} habilitadas.");
+
+                // MUDANÇA: Captura os erros
+                string errosConstraints;
+                int count = _constraintManager.EnableConstraints(list, out errosConstraints);
+
+                // MUDANÇA: Mostra o popup de aviso ou sucesso
+                if (!string.IsNullOrEmpty(errosConstraints))
+                {
+                    MessageBox.Show(errosConstraints, "Aviso: Falhas em Constraints", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    MessageBox.Show($"{count} habilitadas com sucesso.");
+                }
+
                 btnRefreshEnableConstraints_Click(sender, e);
             }
             catch (Exception ex) { MessageBox.Show("Erro: " + ex.Message); }
@@ -1175,9 +1143,10 @@ END;";
             bool doSequences = chkResetSequences.Checked;
             bool doStats = chkGatherStats.Checked;
             bool doRebuild = checkBoxIndex.Checked;
-            bool doCompile = chkCompileSchema.Checked;
+            bool doCompile = checkBox1.Checked;
+            bool doCheck = chkValidarConstraints.Checked;
 
-            if (!doRebuild && !enableTriggers && !enableConstraints && !doSequences && !doStats && !doCompile)
+            if (!doRebuild && !enableTriggers && !enableConstraints && !doSequences && !doStats && !doCompile && !doCheck)
             {
                 MessageBox.Show("Selecione ao menos uma opção para habilitar/restaurar.", "Aviso");
                 return;
@@ -1209,80 +1178,56 @@ END;";
                     {
                         worker.ReportProgress(0, "Habilitando Constraints...");
                         var allConstraints = _constraintManager.GetAllConstraints(enabled: false);
-                        if (allConstraints.Count > 0) _constraintManager.EnableConstraints(allConstraints);
+                        if (allConstraints.Count > 0)
+                        {
+                            // MUDANÇA: Captura e mostra o erro de forma segura usando o this.Invoke (pois estamos num Worker)
+                            string errosConstraints;
+                            _constraintManager.EnableConstraints(allConstraints, out errosConstraints);
+
+                            if (!string.IsNullOrEmpty(errosConstraints))
+                            {
+                                this.Invoke(new Action(() => {
+                                    MessageBox.Show(errosConstraints, "Aviso: Falhas em Constraints", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                }));
+                            }
+                        }
                     }
 
                     if (doSequences)
                     {
                         worker.ReportProgress(0, "Resetando Sequences...");
                         _connectionManager.ExecuteNonQuery(@"
-
-create or replace procedure prc_wms_util_reset_sequence(gravar           in char default 'N',
+create or replace procedure prc_wms_util_reset_sequence(gravar            in char default 'N',
                                                         mostra_seq_maior in char default 'S') is
-
    ----------------------
    -- Versão 22.15.004
    ----------------------
-
    cursor sequence_cursor is
-      select us.sequence_name as seq_name,
-             t.table_name,
-             t.column_name,
-             us.last_number,
-             us.min_value
+      select us.sequence_name as seq_name, t.table_name, t.column_name, us.last_number, us.min_value
         from user_sequences us
-        left join ger_sequences t
-          on upper(us.sequence_name) = upper(t.seq_name)
-       where upper(t.resetamanual) = 'N'
-         and upper(us.cycle_flag) = 'N'
-         and us.sequence_name not in ('SEQ_GER_MENUS')
-         and us.increment_by = 1
-         and t.table_name is not null --#
-         and us.last_number > 1
-       order by t.seq_name;
+        left join ger_sequences t on upper(us.sequence_name) = upper(t.seq_name)
+       where upper(t.resetamanual) = 'N' and upper(us.cycle_flag) = 'N'
+         and us.sequence_name not in ('SEQ_GER_MENUS') and us.increment_by = 1
+         and t.table_name is not null and us.last_number > 1 order by t.seq_name;
 
    lin sequence_cursor%rowtype;
-
    val          number := 0;
    l_current    number := 0;
    l_difference number := 0;
 
-   ---------------------------------------------------------
-   -- Procedure Interna para garantir o cadastro sem duplicidade
-   ---------------------------------------------------------
-   procedure p_reg_seq(p_seq varchar2,
-                       p_tab varchar2,
-                       p_col varchar2) is
+   procedure p_reg_seq(p_seq varchar2, p_tab varchar2, p_col varchar2) is
    begin
       merge into ger_sequences t
-      using (select p_seq as seq,
-                    p_tab as tab,
-                    p_col as col
-               from dual) orig
-      on (upper(t.seq_name) = upper(orig.seq)) -- Verifica pelo NOME da sequence
+      using (select p_seq as seq, p_tab as tab, p_col as col from dual) orig
+      on (upper(t.seq_name) = upper(orig.seq))
       when matched then
-      -- Se já existe, garante que a tabela e coluna estão certas (opcional, mas recomendado)
-         update
-            set t.table_name  = orig.tab,
-                t.column_name = orig.col
+         update set t.table_name  = orig.tab, t.column_name = orig.col
       when not matched then
-      -- Se não existe, insere
-         insert
-            (seq_name,
-             table_name,
-             column_name,
-             resetamanual)
-         values
-            (orig.seq,
-             orig.tab,
-             orig.col,
-             'N');
+         insert (seq_name, table_name, column_name, resetamanual)
+         values (orig.seq, orig.tab, orig.col, 'N');
    end p_reg_seq;
 
 begin
-
-   -- 1. Executa a carga/garantia dos dados na tabela
-   -- ------------------------------------------------
    p_reg_seq('SEQ_COMPOSICAO_LINHAS_PEDIDOS', 'COMPOSICAO_LINHAS_PEDIDOS', 'ID');
    p_reg_seq('SEQ_WMS_ETIQ_LIN_PED_ERP', 'ETIQUETAS_LINHAS_PEDIDOS_ERP', 'ID');
    p_reg_seq('SEQ_GER_AVISOS', 'GER_AVISOS', 'GER_AVISO_ID');
@@ -1406,18 +1351,10 @@ begin
    p_reg_seq('SEQ_WMS_VOLUMES', 'WMS_VOLUMES', 'WMS_VOLUME_ID');
    p_reg_seq('SEQ_WMS_VOLUMES_DELETADOS', 'WMS_VOLUMES_DELETADOS', 'ID');
 
-   -- Commit das configurações
    commit;
 
    for lin in sequence_cursor
    loop
-   
-      dbms_output.put('Seq: ' || lin.seq_name || lpad(' ', 32 - length(lin.seq_name), ' ') --
-                      || ' Tab: ' || lin.table_name || lpad(' ', 32 - length(lin.table_name), ' ') --
-                      || ' Col: ' || lin.column_name ||
-                      lpad(' ', 32 - length(lin.column_name), ' ') --
-                      || ' Last_number: ' || lin.last_number || ' ');
-   
       execute immediate 'select nvl(max(t.' || lin.column_name || '),0) from ' || lin.table_name || ' t'
          into val;
       if lin.table_name = 'PEDIDOS' then
@@ -1432,47 +1369,30 @@ begin
             into val;
       end if;
    
-      if lin.last_number = (val + 1) --
-         or (val = 0 and lin.last_number <= 2) --
-       then
-         dbms_output.put_line(lpad(' ', 10 - length(val), ' ') ||
-                              ' !!! IGNORADA!! Ultimo valor IGUAL: ' || (val + 1));
+      if lin.last_number = (val + 1) or (val = 0 and lin.last_number <= 2) then
          continue;
       end if;
    
       if mostra_seq_maior = 'N' and lin.last_number > val then
-         dbms_output.put_line(lpad(' ', 10 - length(val), ' ') ||
-                              ' !!! IGNORADA!! Ultimo valor é MAIOR! Campo: ' || (val + 1) ||
-                              ' Seq: ' || lin.last_number);
          continue;
-      else
-         dbms_output.put_line(chr(13) || '*** Alterar para: ' || val || case when
-                              val >= lin.last_number then ' *** <<<<<< ***' else '' end);
       end if;
-      if gravar = 'S' then
       
+      if gravar = 'S' then
          execute immediate 'select ' || lin.seq_name || '.nextval from dual'
             into l_current;
-      
          l_difference := val - l_current;
-      
          if l_difference = 0 then
             continue;
          end if;
-      
-         if lin.min_value = 1 and val = 0 then
+         if lin.min_value = 1 and val  = 0 then
             l_difference := l_difference + 1;
          end if;
-      
          execute immediate 'alter sequence ' || lin.seq_name || ' increment by ' || l_difference;
-      
          execute immediate 'select ' || lin.seq_name || '.nextval from dual'
             into l_difference;
-      
          execute immediate 'alter sequence ' || lin.seq_name || ' increment by 1';
       end if;
    end loop;
-
 end prc_wms_util_reset_sequence;
 ");
                         _connectionManager.ExecuteNonQuery("BEGIN prc_wms_util_reset_sequence(gravar=>'S'); END;");
@@ -1495,7 +1415,10 @@ end prc_wms_util_reset_sequence;
                             _triggerManager.EnableTriggers(names);
                         }
                     }
-
+                    if (doCheck)
+                    {
+                        ExecutarValidacaoConstraints();
+                    }
                     if (doCompile)
                     {
                         worker.ReportProgress(0, "Recompilando Schema...");
@@ -1522,7 +1445,6 @@ end prc_wms_util_reset_sequence;
             };
             worker.RunWorkerAsync();
         }
-
         private void UpdateTruncateList(List<TableInfo> tablesToShow)
         {
             checkedListTables.Items.Clear();
@@ -1543,6 +1465,95 @@ end prc_wms_util_reset_sequence;
             return true;
         }
 
+        private void AdicionarLog(string mensagem)
+        {
+            if (string.IsNullOrEmpty(mensagem)) return;
+
+            string textoFinal = $"{DateTime.Now:HH:mm:ss} - {mensagem}\r\n";
+
+            // Tenta achar o componente pelo nome padrão
+            // Se o seu componente se chamar "richTextBox1", vai funcionar agora
+            Control[] controles = this.Controls.Find("richTextBox1", true);
+
+            if (controles.Length > 0 && controles[0] is RichTextBox rtb)
+            {
+                rtb.AppendText(textoFinal);
+                rtb.ScrollToCaret();
+            }
+            else
+            {
+                // Se não achou, tenta achar com nome "Log"
+                controles = this.Controls.Find("Log", true);
+                if (controles.Length > 0 && controles[0] is RichTextBox rtbLog)
+                {
+                    rtbLog.AppendText(textoFinal);
+                    rtbLog.ScrollToCaret();
+                }
+                // Se ainda não achou, tenta "txtLog"
+                else
+                {
+                    controles = this.Controls.Find("txtLog", true);
+                    if (controles.Length > 0 && controles[0] is RichTextBox rtbTxt)
+                    {
+                        rtbTxt.AppendText(textoFinal);
+                        rtbTxt.ScrollToCaret();
+                    }
+                }
+            }
+        }
+        private void ExecutarValidacaoConstraints()
+        {
+            // --- MUDANÇA AQUI: De Log() para AdicionarLog() ---
+            AdicionarLog("Iniciando validação de constraints...");
+
+            try
+            {
+                string sqlGenerator = @"
+            SELECT 'ALTER TABLE ' || table_name || 
+                   ' MODIFY CONSTRAINT ' || constraint_name || 
+                   ' VALIDATE' AS COMANDO
+            FROM user_constraints
+            WHERE validated = 'NOT VALIDATED'
+              AND constraint_type IN ('P', 'U', 'R', 'C')";
+
+                DataTable dt = _connectionManager.ExecuteQuery(sqlGenerator);
+
+                if (dt.Rows.Count == 0)
+                {
+                    AdicionarLog("Nenhuma constraint 'NOT VALIDATED' encontrada.");
+                    return;
+                }
+
+                AdicionarLog($"Encontradas {dt.Rows.Count} constraints para validar.");
+
+                int countSucesso = 0;
+                int countErro = 0;
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    string ddl = row["COMANDO"].ToString();
+
+                    try
+                    {
+                        _connectionManager.ExecuteNonQuery(ddl);
+                        countSucesso++;
+                    }
+                    catch (Exception ex)
+                    {
+                        countErro++;
+                        // Loga o erro mas não para o processo
+                        AdicionarLog($"Erro ao validar ({ddl}): {ex.Message}");
+                    }
+                }
+
+                AdicionarLog($"Fim da validação. Sucesso: {countSucesso} | Erros: {countErro}");
+            }
+            catch (Exception ex)
+            {
+                AdicionarLog($"Erro crítico ao buscar constraints: {ex.Message}");
+                MessageBox.Show(ex.Message, "Erro na Validação", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         private void SetStatus(string msg) { toolStripStatusLabel.Text = msg; statusStrip.Refresh(); }
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e) { if (_connectionManager?.IsConnected == true) _connectionManager.Disconnect(); }
         private void txtServiceName_TextChanged(object sender, EventArgs e) { }
@@ -1601,7 +1612,6 @@ end prc_wms_util_reset_sequence;
                 return false;
             }
         }
-
         public static bool Acesso248()
         {
             try

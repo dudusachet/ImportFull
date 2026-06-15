@@ -18,11 +18,11 @@ namespace PLSQLImportFull.Business
 
     public class ImportManager
     {
-        private OracleQueryExecutor _queryExecutor;
+        private readonly OracleQueryExecutor _queryExecutor;
 
         public ImportManager(OracleQueryExecutor queryExecutor)
         {
-            _queryExecutor = queryExecutor ?? throw new ArgumentNullException("queryExecutor");
+            _queryExecutor = queryExecutor ?? throw new ArgumentNullException(nameof(queryExecutor));
         }
 
         public ImportStatistics ExecuteFiles(List<string> filePaths, Action<string> logger)
@@ -43,6 +43,7 @@ namespace PLSQLImportFull.Business
 
         private void ProcessZipFile(string zipPath, ImportStatistics stats, Action<string> logger)
         {
+            // Lógica do 7zip (Mantida igual ao seu original)
             string sevenZipPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "7za.exe");
             if (!File.Exists(sevenZipPath)) sevenZipPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "7za.exe");
 
@@ -79,6 +80,9 @@ namespace PLSQLImportFull.Business
             finally { try { Directory.Delete(tempDir, true); } catch { } }
         }
 
+        // =================================================================================
+        //  NOVO PROCESSADOR ROBUSTO (Híbrido: Linha a Linha + Máquina de Estado)
+        // =================================================================================
         private void ProcessSqlFile(string file, ImportStatistics stats, Action<string> logger)
         {
             try
@@ -87,200 +91,177 @@ namespace PLSQLImportFull.Business
                 logger($"--------------------------------------------------");
                 logger($"Arquivo: {fileName}");
 
-                var tableStats = new Dictionary<string, int[]>(); // [Total, Sucesso]
-                int fileInserts = 0;
+                var tableStats = new Dictionary<string, int[]>();
+                StringBuilder buffer = new StringBuilder();
 
-                // Lê o arquivo comando por comando (Streaming)
-                foreach (var rawSql in ReadAndParseSqlCommands(file))
+                // Estados da leitura
+                bool inPlSqlBlock = false;    // Estamos dentro de BEGIN...END?
+                bool inBlockComment = false;  // Estamos dentro de /* ... */?
+
+                // Usa Encoding.Default (ANSI) para corrigir acentos e problemas de aspas quebradas
+                using (StreamReader sr = new StreamReader(file, Encoding.Default))
                 {
-                    if (string.IsNullOrWhiteSpace(rawSql)) continue;
-
-                    // --- CORREÇÃO PRINCIPAL ---
-                    // Em vez de descartar o bloco se tiver PROMPT, nós limpamos ele.
-                    // Isso preserva o INSERT que vem logo depois do cabeçalho.
-                    string sql = SanitizeSql(rawSql);
-
-                    if (string.IsNullOrWhiteSpace(sql)) continue;
-
-                    bool isInsert = sql.TrimStart().StartsWith("INSERT", StringComparison.OrdinalIgnoreCase);
-                    string tableName = isInsert ? ExtractTableName(sql) : "OUTROS_COMANDOS";
-
-                    if (!tableStats.ContainsKey(tableName)) tableStats[tableName] = new int[] { 0, 0 };
-
-                    if (isInsert)
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
                     {
-                        fileInserts++;
-                        stats.TotalInsertsExpected++;
-                        tableStats[tableName][0]++;
-                    }
+                        string trimmed = line.Trim();
 
-                    try
-                    {
-                        _queryExecutor.ExecuteNonQuery(sql);
-
-                        if (isInsert)
+                        // 1. TRATAMENTO DE COMENTÁRIOS DE BLOCO (/* ... */)
+                        // Resolve o erro PLS-00103 quando o Oracle tenta ler o cabeçalho decorativo
+                        if (inBlockComment)
                         {
-                            stats.TotalInsertsSuccess++;
-                            tableStats[tableName][1]++;
+                            if (line.Contains("*/")) inBlockComment = false;
+                            continue; // Pula linha
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        if (!stats.ErrorCountByTable.ContainsKey(tableName)) stats.ErrorCountByTable[tableName] = 0;
-
-                        if (ex.Message.Contains("ORA-00001"))
+                        if (trimmed.StartsWith("/*"))
                         {
-                            // Ignora duplicado (não conta como sucesso, nem como erro crítico)
+                            if (!trimmed.EndsWith("*/")) inBlockComment = true;
+                            continue;
                         }
-                        else
+
+                        // 2. FILTRO DE SUJEIRA DO SQL*PLUS (Só se o buffer estiver vazio)
+                        // Resolve o ORA-00900 (Comando inválido)
+                        if (buffer.Length == 0)
                         {
-                            stats.ErrorCountByTable[tableName]++;
-                            logger($"[ERRO] {tableName}: {ex.Message}");
+                            if (string.IsNullOrWhiteSpace(trimmed)) continue;
+                            if (trimmed.StartsWith("--")) continue; // Comentário simples de linha
+
+                            string upper = trimmed.ToUpper();
+                            if (upper.StartsWith("SET ") || upper.StartsWith("PROMPT") ||
+                                upper.StartsWith("SPOOL") || upper.StartsWith("EXIT") ||
+                                upper.StartsWith("QUIT") || upper.StartsWith("ACCEPT") ||
+                                (upper.StartsWith("SELECT '") && upper.Contains("DUAL"))) // Logs de data
+                            {
+                                continue; // Ignora essa linha e vai para a próxima
+                            }
+
+                            // Detecta início de PL/SQL (Constraints, Triggers, Sequences reset)
+                            if (upper.StartsWith("DECLARE") || upper.StartsWith("BEGIN"))
+                            {
+                                inPlSqlBlock = true;
+                            }
+                        }
+
+                        // 3. ACUMULA A LINHA
+                        if (buffer.Length > 0) buffer.AppendLine();
+                        buffer.Append(line);
+
+                        // 4. VERIFICA SE O COMANDO TERMINOU
+                        if (IsCommandComplete(buffer.ToString(), inPlSqlBlock))
+                        {
+                            string sqlFinal = buffer.ToString().Trim();
+
+                            // Remove terminadores que o C# não gosta
+                            if (inPlSqlBlock)
+                            {
+                                // Remove a barra "/" e espaços finais
+                                sqlFinal = sqlFinal.TrimEnd().TrimEnd('/').TrimEnd();
+                            }
+                            else if (sqlFinal.EndsWith(";"))
+                            {
+                                // Remove o ";" final
+                                sqlFinal = sqlFinal.Substring(0, sqlFinal.Length - 1);
+                            }
+
+                            // Executa
+                            string tableName = ExtractTableName(sqlFinal);
+                            ExecutarSQL(sqlFinal, tableName, stats, tableStats, logger);
+
+                            // Limpa para o próximo comando
+                            buffer.Clear();
+                            inPlSqlBlock = false;
                         }
                     }
                 }
 
-                // Resumo
+                // Log final do arquivo
                 if (tableStats.Count > 0)
                 {
                     foreach (var kvp in tableStats)
                     {
-                        if (kvp.Key == "OUTROS_COMANDOS" || kvp.Key == "DESCONHECIDA") continue;
+                        if (kvp.Key == "OUTROS" || kvp.Key == "PL/SQL") continue;
                         logger($"OK: {kvp.Key} (Inseridos: {kvp.Value[1]}/{kvp.Value[0]})");
                     }
                 }
-
-                if (fileInserts == 0) logger($"Info: Arquivo processado (Sem INSERTs).");
             }
             catch (Exception ex)
             {
-                logger($"[FATAL] Erro ao abrir arquivo: {ex.Message}");
+                logger($"[FATAL] Erro ao ler arquivo: {ex.Message}");
             }
         }
 
-        // Remove apenas linhas de configuração do SQL*Plus, preservando o SQL real
-        private string SanitizeSql(string sql)
+        // Valida se o comando realmente acabou (conta aspas e verifica terminadores)
+        private bool IsCommandComplete(string sql, bool isPlSql)
         {
-            // Otimização: se não tem comandos de script, retorna rápido
-            string upper = sql.TrimStart().ToUpper();
-            if (!upper.StartsWith("SET") && !upper.StartsWith("PROMPT") &&
-                !upper.StartsWith("EXIT") && !upper.StartsWith("QUIT"))
+            if (string.IsNullOrWhiteSpace(sql)) return false;
+            string trimmed = sql.TrimEnd();
+
+            // Lógica para PL/SQL (Constraints/Triggers)
+            if (isPlSql)
             {
-                return sql;
+                // Só acaba se a última linha for uma barra "/" isolada
+                return trimmed.EndsWith("/") && (trimmed.EndsWith("\n/") || trimmed.EndsWith("\r/") || trimmed == "/");
             }
 
-            StringBuilder sb = new StringBuilder();
-            using (StringReader sr = new StringReader(sql))
-            {
-                string line;
-                while ((line = sr.ReadLine()) != null)
-                {
-                    string trimmed = line.Trim().ToUpper();
+            // Lógica para SQL Normal (INSERT)
+            if (!trimmed.EndsWith(";")) return false;
 
-                    // Remove linhas que causam erro no driver Oracle Managed
-                    if (trimmed.StartsWith("SET ") ||
-                        trimmed.StartsWith("PROMPT") ||
-                        trimmed.StartsWith("SPOOL ") ||
-                        trimmed.StartsWith("WHENEVER ") ||
-                        trimmed.StartsWith("EXIT") ||
-                        trimmed.StartsWith("QUIT"))
-                    {
-                        continue;
-                    }
-
-                    sb.AppendLine(line);
-                }
-            }
-            return sb.ToString().Trim();
-        }
-
-        // =========================================================================
-        // PARSER DE STREAM SEGURO (CORREÇÃO DE BORDAS DE BUFFER)
-        // =========================================================================
-        private IEnumerable<string> ReadAndParseSqlCommands(string filePath)
-        {
-            StringBuilder sb = new StringBuilder();
+            // VERIFICAÇÃO DE ASPAS (Resolve ORA-01756)
+            // Se tem um ";" no final, mas estamos dentro de uma string (ex: 'Texto com ;'), não acabou.
             bool inString = false;
-            bool inLineComment = false;
-
-            using (StreamReader sr = new StreamReader(filePath, Encoding.UTF8))
+            for (int i = 0; i < sql.Length; i++)
             {
-                int nextChar;
-                while ((nextChar = sr.Read()) != -1)
+                if (sql[i] == '\'')
                 {
-                    char c = (char)nextChar;
-
-                    // 1. Ignora conteúdo de comentários de linha
-                    if (inLineComment)
-                    {
-                        if (c == '\n') inLineComment = false;
-                        continue;
-                    }
-
-                    // 2. Verifica início de comentário (--)
-                    if (!inString && c == '-' && sr.Peek() == '-')
-                    {
-                        inLineComment = true;
-                        sr.Read(); // Consome o segundo traço
-                        continue;
-                    }
-
-                    // 3. Lógica de Aspas (Strings)
-                    if (c == '\'')
-                    {
-                        if (inString)
-                        {
-                            // Verifica aspa escapada ('') olhando o próximo char
-                            if (sr.Peek() == '\'')
-                            {
-                                sb.Append(c);
-                                sb.Append((char)sr.Read()); // Consome e adiciona a segunda aspa
-                                continue;
-                            }
-                            inString = false; // Fecha a string
-                        }
-                        else
-                        {
-                            inString = true; // Abre a string
-                        }
-                    }
-
-                    // 4. Ponto e vírgula (Fim de comando)
-                    if (c == ';' && !inString)
-                    {
-                        string cmd = sb.ToString().Trim();
-                        if (cmd.Length > 0) yield return cmd;
-                        sb.Clear();
-                        continue;
-                    }
-
-                    // 5. Barra / (Fim de bloco PL/SQL)
-                    if (c == '/' && !inString)
-                    {
-                        string currentStr = sb.ToString().Trim();
-                        if (currentStr.Length == 0) // Barra isolada no inicio
-                        {
-                            sb.Clear();
-                            continue;
-                        }
-                        // Verifica se a barra está isolada no final de um bloco
-                        if (sb.Length > 0 && (sb[sb.Length - 1] == '\n' || sb[sb.Length - 1] == '\r'))
-                        {
-                            string cmd = sb.ToString().Trim();
-                            if (cmd.Length > 0) yield return cmd;
-                            sb.Clear();
-                            continue;
-                        }
-                    }
-
-                    sb.Append(c);
+                    // Verifica se é escape (duas aspas '')
+                    if (inString && i + 1 < sql.Length && sql[i + 1] == '\'')
+                        i++; // Pula a próxima
+                    else
+                        inString = !inString; // Abre ou fecha
                 }
             }
 
-            if (sb.Length > 0)
+            // Se inString for true, significa que tem aspas abertas, então o comando não acabou
+            return !inString;
+        }
+
+        private void ExecutarSQL(string sql, string tableName, ImportStatistics stats, Dictionary<string, int[]> tableStats, Action<string> logger)
+        {
+            if (string.IsNullOrWhiteSpace(sql)) return;
+
+            bool isInsert = tableName != "OUTROS" && tableName != "PL/SQL";
+
+            if (!tableStats.ContainsKey(tableName)) tableStats[tableName] = new int[] { 0, 0 };
+
+            if (isInsert)
             {
-                string cmd = sb.ToString().Trim();
-                if (cmd.Length > 0) yield return cmd;
+                stats.TotalInsertsExpected++;
+                tableStats[tableName][0]++;
+            }
+
+            try
+            {
+                _queryExecutor.ExecuteNonQuery(sql);
+
+                if (isInsert)
+                {
+                    stats.TotalInsertsSuccess++;
+                    tableStats[tableName][1]++;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Ignora erro de constraint unique (duplicado) sem parar o processo
+                if (ex.Message.Contains("ORA-00001")) return;
+
+                if (!stats.ErrorCountByTable.ContainsKey(tableName)) stats.ErrorCountByTable[tableName] = 0;
+                stats.ErrorCountByTable[tableName]++;
+
+                // Não loga erros falsos gerados por lixo do SQL*Plus se algum passar
+                if (!ex.Message.Contains("ORA-00900"))
+                {
+                    logger($"[ERRO] {tableName}: {ex.Message}");
+                }
             }
         }
 
@@ -288,11 +269,19 @@ namespace PLSQLImportFull.Business
         {
             try
             {
+                if (sql.Length > 200) sql = sql.Substring(0, 200); // Otimização
+
+                // Verifica PL/SQL
+                if (sql.TrimStart().ToUpper().StartsWith("DECLARE") || sql.TrimStart().ToUpper().StartsWith("BEGIN"))
+                    return "PL/SQL";
+
+                // Verifica INSERT
                 var match = Regex.Match(sql, @"INSERT\s+INTO\s+([a-zA-Z0-9_$#]+)", RegexOptions.IgnoreCase);
                 if (match.Success) return match.Groups[1].Value.ToUpper();
-                return "DESCONHECIDA";
+
+                return "OUTROS";
             }
-            catch { return "DESCONHECIDA"; }
+            catch { return "OUTROS"; }
         }
     }
 }

@@ -10,21 +10,21 @@ namespace PLSQLImportFull.Business
     {
         private OracleQueryExecutor _queryExecutor;
         private MetadataRepository _metadataRepository;
+
         public ConstraintManager(OracleQueryExecutor queryExecutor, MetadataRepository metadataRepository)
         {
             _queryExecutor = queryExecutor ?? throw new ArgumentNullException(nameof(queryExecutor));
             _metadataRepository = metadataRepository ?? throw new ArgumentNullException(nameof(metadataRepository));
         }
+
         public List<ConstraintInfo> GetAllConstraints(bool enabled)
         {
             return _metadataRepository.GetAllConstraints(enabled);
         }
+
         public void DisableConstraint(ConstraintInfo constraint)
         {
-            if (constraint == null)
-            {
-                throw new ArgumentNullException(nameof(constraint));
-            }
+            if (constraint == null) throw new ArgumentNullException(nameof(constraint));
 
             if (string.IsNullOrEmpty(constraint.TableName) || string.IsNullOrEmpty(constraint.ConstraintName))
             {
@@ -37,10 +37,7 @@ namespace PLSQLImportFull.Business
 
         public int DisableConstraints(List<ConstraintInfo> constraints)
         {
-            if (constraints == null || constraints.Count == 0)
-            {
-                return 0;
-            }
+            if (constraints == null || constraints.Count == 0) return 0;
 
             int successCount = 0;
             List<string> errors = new List<string>();
@@ -65,43 +62,44 @@ namespace PLSQLImportFull.Business
 
             return successCount;
         }
-        public int EnableConstraints(List<ConstraintInfo> constraints)
+
+        public int EnableConstraints(List<ConstraintInfo> constraints, out string relatorioErros)
         {
             int successCount = 0;
             StringBuilder errorReport = new StringBuilder();
+            relatorioErros = string.Empty; // Começa vazio
+
+            if (constraints == null || constraints.Count == 0) return 0;
 
             foreach (var c in constraints)
             {
                 try
                 {
                     // Tenta habilitar usando NOVALIDATE (mais rápido e tolerante a dados antigos)
-                    // Se a constraint não existir mais (foi dropada), vai gerar erro aqui
                     string sql = $"ALTER TABLE {c.TableName} ENABLE NOVALIDATE CONSTRAINT {c.ConstraintName}";
                     _queryExecutor.ExecuteNonQuery(sql);
                     successCount++;
                 }
                 catch (Exception ex)
                 {
-                    // Filtra erros irrelevantes
-                    // ORA-02430: constraint não existe (acontece se você dropou as checks de usuario/maquina antes)
+                    // ORA-02430: constraint não existe (ignora silenciosamente)
                     if (ex.Message.Contains("ORA-02430"))
                     {
-                        // Apenas ignora, pois se não existe, não precisa habilitar
                         continue;
                     }
 
-                    // Se for outro erro (ex: ORA-02298 - Pai não encontrado), adiciona ao relatório
+                    // Se for erro real, anota no relatório
                     errorReport.AppendLine($"[FALHA] {c.TableName}.{c.ConstraintName}: {ex.Message}");
                 }
             }
 
-            // Se houve erros reais, lança uma exceção para o MainForm mostrar na tela
+            // Se houve erros, preenche a variável de saída (out)
             if (errorReport.Length > 0)
             {
-                // Adiciona um cabeçalho ao erro
-                string finalMsg = $"Habilitadas: {successCount}/{constraints.Count}\n\nERROS ENCONTRADOS:\n{errorReport.ToString()}";
-                throw new Exception(finalMsg);
+                relatorioErros = $"Foram habilitadas {successCount} de {constraints.Count} constraints.\n\n" +
+                                 $"AS SEGUINTES CONSTRAINTS FALHARAM E PRECISAM DE ATENÇÃO:\n\n{errorReport.ToString()}";
             }
+
             return successCount;
         }
     }

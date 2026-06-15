@@ -87,7 +87,7 @@ namespace PLSQLImportFull.Forms
             this.btnRunRestore = new System.Windows.Forms.Button();
             this.grpRestoreActions = new System.Windows.Forms.GroupBox();
             this.chkEnableAllTriggers = new System.Windows.Forms.CheckBox();
-            this.chkCompileSchema = new System.Windows.Forms.CheckBox();
+            this.chkValidarConstraints = new System.Windows.Forms.CheckBox();
             this.chkEnableFKAndCheck = new System.Windows.Forms.CheckBox();
             this.checkBoxIndex = new System.Windows.Forms.CheckBox();
             this.tabTriggers = new System.Windows.Forms.TabPage();
@@ -123,6 +123,7 @@ namespace PLSQLImportFull.Forms
             this.btnEnableSelectedConstraints = new System.Windows.Forms.Button();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.tabMaintenance.SuspendLayout();
             this.grpMaintenanceActions.SuspendLayout();
             this.tabControl.SuspendLayout();
@@ -275,7 +276,7 @@ namespace PLSQLImportFull.Forms
             this.chkResetSequences.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkResetSequences.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkResetSequences.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkResetSequences.Location = new System.Drawing.Point(30, 115);
+            this.chkResetSequences.Location = new System.Drawing.Point(30, 113);
             this.chkResetSequences.Name = "chkResetSequences";
             this.chkResetSequences.Size = new System.Drawing.Size(334, 20);
             this.chkResetSequences.TabIndex = 4;
@@ -289,7 +290,7 @@ namespace PLSQLImportFull.Forms
             this.chkGatherStats.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkGatherStats.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkGatherStats.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkGatherStats.Location = new System.Drawing.Point(30, 150);
+            this.chkGatherStats.Location = new System.Drawing.Point(30, 148);
             this.chkGatherStats.Name = "chkGatherStats";
             this.chkGatherStats.Size = new System.Drawing.Size(265, 20);
             this.chkGatherStats.TabIndex = 3;
@@ -410,7 +411,7 @@ namespace PLSQLImportFull.Forms
             this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(241, 20);
             this.txtPassword.TabIndex = 8;
-            this.txtPassword.Text = "r22sp15";
+            this.txtPassword.Text = "senha";
             // 
             // lblPassword
             // 
@@ -429,7 +430,7 @@ namespace PLSQLImportFull.Forms
             this.txtUserId.Name = "txtUserId";
             this.txtUserId.Size = new System.Drawing.Size(241, 20);
             this.txtUserId.TabIndex = 7;
-            this.txtUserId.Text = "r22sp15";
+            this.txtUserId.Text = "senha";
             // 
             // lblUserId
             // 
@@ -757,7 +758,7 @@ namespace PLSQLImportFull.Forms
             // 
             this.lblRestoreInfo.AutoSize = true;
             this.lblRestoreInfo.ForeColor = System.Drawing.Color.DimGray;
-            this.lblRestoreInfo.Location = new System.Drawing.Point(20, 382);
+            this.lblRestoreInfo.Location = new System.Drawing.Point(20, 401);
             this.lblRestoreInfo.Name = "lblRestoreInfo";
             this.lblRestoreInfo.Size = new System.Drawing.Size(250, 13);
             this.lblRestoreInfo.TabIndex = 2;
@@ -769,7 +770,7 @@ namespace PLSQLImportFull.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRunRestore.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.btnRunRestore.ForeColor = System.Drawing.Color.DarkGreen;
-            this.btnRunRestore.Location = new System.Drawing.Point(20, 323);
+            this.btnRunRestore.Location = new System.Drawing.Point(20, 342);
             this.btnRunRestore.Name = "btnRunRestore";
             this.btnRunRestore.Size = new System.Drawing.Size(710, 50);
             this.btnRunRestore.TabIndex = 1;
@@ -781,8 +782,9 @@ namespace PLSQLImportFull.Forms
             // 
             this.grpRestoreActions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.grpRestoreActions.Controls.Add(this.checkBox1);
             this.grpRestoreActions.Controls.Add(this.chkEnableAllTriggers);
-            this.grpRestoreActions.Controls.Add(this.chkCompileSchema);
+            this.grpRestoreActions.Controls.Add(this.chkValidarConstraints);
             this.grpRestoreActions.Controls.Add(this.chkEnableFKAndCheck);
             this.grpRestoreActions.Controls.Add(this.chkResetSequences);
             this.grpRestoreActions.Controls.Add(this.chkGatherStats);
@@ -790,7 +792,7 @@ namespace PLSQLImportFull.Forms
             this.grpRestoreActions.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.grpRestoreActions.Location = new System.Drawing.Point(20, 38);
             this.grpRestoreActions.Name = "grpRestoreActions";
-            this.grpRestoreActions.Size = new System.Drawing.Size(710, 279);
+            this.grpRestoreActions.Size = new System.Drawing.Size(710, 298);
             this.grpRestoreActions.TabIndex = 0;
             this.grpRestoreActions.TabStop = false;
             this.grpRestoreActions.Text = "Selecione o que deseja reativar:";
@@ -802,26 +804,26 @@ namespace PLSQLImportFull.Forms
             this.chkEnableAllTriggers.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkEnableAllTriggers.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkEnableAllTriggers.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkEnableAllTriggers.Location = new System.Drawing.Point(30, 185);
+            this.chkEnableAllTriggers.Location = new System.Drawing.Point(30, 183);
             this.chkEnableAllTriggers.Name = "chkEnableAllTriggers";
             this.chkEnableAllTriggers.Size = new System.Drawing.Size(186, 21);
             this.chkEnableAllTriggers.TabIndex = 0;
             this.chkEnableAllTriggers.Text = "Habilitar TODAS as Triggers";
             this.chkEnableAllTriggers.UseVisualStyleBackColor = true;
             // 
-            // chkCompileSchema
+            // chkValidarConstraints
             // 
-            this.chkCompileSchema.AutoSize = true;
-            this.chkCompileSchema.Checked = true;
-            this.chkCompileSchema.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkCompileSchema.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkCompileSchema.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkCompileSchema.Location = new System.Drawing.Point(30, 220);
-            this.chkCompileSchema.Name = "chkCompileSchema";
-            this.chkCompileSchema.Size = new System.Drawing.Size(261, 20);
-            this.chkCompileSchema.TabIndex = 15;
-            this.chkCompileSchema.Text = "Recompilar Schema (Objetos Inválidos)";
-            this.chkCompileSchema.UseVisualStyleBackColor = true;
+            this.chkValidarConstraints.AutoSize = true;
+            this.chkValidarConstraints.Checked = true;
+            this.chkValidarConstraints.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkValidarConstraints.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.chkValidarConstraints.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkValidarConstraints.Location = new System.Drawing.Point(30, 218);
+            this.chkValidarConstraints.Name = "chkValidarConstraints";
+            this.chkValidarConstraints.Size = new System.Drawing.Size(211, 20);
+            this.chkValidarConstraints.TabIndex = 15;
+            this.chkValidarConstraints.Text = "Validar Constraints (VALIDATE)";
+            this.chkValidarConstraints.UseVisualStyleBackColor = true;
             // 
             // chkEnableFKAndCheck
             // 
@@ -830,7 +832,7 @@ namespace PLSQLImportFull.Forms
             this.chkEnableFKAndCheck.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkEnableFKAndCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkEnableFKAndCheck.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkEnableFKAndCheck.Location = new System.Drawing.Point(30, 80);
+            this.chkEnableFKAndCheck.Location = new System.Drawing.Point(30, 78);
             this.chkEnableFKAndCheck.Name = "chkEnableFKAndCheck";
             this.chkEnableFKAndCheck.Size = new System.Drawing.Size(272, 21);
             this.chkEnableFKAndCheck.TabIndex = 1;
@@ -844,7 +846,7 @@ namespace PLSQLImportFull.Forms
             this.checkBoxIndex.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxIndex.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.checkBoxIndex.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxIndex.Location = new System.Drawing.Point(30, 45);
+            this.checkBoxIndex.Location = new System.Drawing.Point(30, 43);
             this.checkBoxIndex.Name = "checkBoxIndex";
             this.checkBoxIndex.Size = new System.Drawing.Size(116, 20);
             this.checkBoxIndex.TabIndex = 7;
@@ -1220,6 +1222,20 @@ namespace PLSQLImportFull.Forms
             this.toolStripStatusLabel.Size = new System.Drawing.Size(43, 17);
             this.toolStripStatusLabel.Text = "Pronto";
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Checked = true;
+            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox1.Location = new System.Drawing.Point(30, 253);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(261, 20);
+            this.checkBox1.TabIndex = 16;
+            this.checkBox1.Text = "Recompilar Schema (Objetos Inválidos)";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1335,7 +1351,7 @@ namespace PLSQLImportFull.Forms
         private System.Windows.Forms.CheckBox chkPurgeRecycleBin;
         private System.Windows.Forms.CheckBox chkGatherStats;
         //private System.Windows.Forms.CheckBox chkGatherStats2;
-        private System.Windows.Forms.CheckBox chkCompileSchema;
+        private System.Windows.Forms.CheckBox chkValidarConstraints;
         private System.Windows.Forms.Button btnRunMaintenance;
         private System.Windows.Forms.TabPage tabRestore;
         private System.Windows.Forms.GroupBox grpRestoreActions;
@@ -1356,5 +1372,6 @@ namespace PLSQLImportFull.Forms
         private Label label10;
         private Label label9;
         private CheckBox checkBoxIndex;
+        private CheckBox checkBox1;
     }
 }
