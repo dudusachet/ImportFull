@@ -784,21 +784,8 @@ namespace PLSQLImportFull.Forms
             {
                 List<ConstraintInfo> list = new List<ConstraintInfo>();
                 foreach (ConstraintInfo c in checkedListConstraints.CheckedItems) list.Add(c);
-
-                // MUDANÇA: Captura os erros
-                string errosConstraints;
-                int count = _constraintManager.EnableConstraints(list, out errosConstraints);
-
-                // MUDANÇA: Mostra o popup se deu erro, senão mostra a mensagem de sucesso normal
-                if (!string.IsNullOrEmpty(errosConstraints))
-                {
-                    MessageBox.Show(errosConstraints, "Aviso: Falhas em Constraints", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-                else
-                {
-                    MessageBox.Show($"{count} constraints habilitadas com sucesso.");
-                }
-
+                int count = _constraintManager.EnableConstraints(list);
+                MessageBox.Show($"{count} constraints habilitadas.");
                 btnRefreshConstraints_Click(sender, e);
             }
             catch (Exception ex) { MessageBox.Show("Erro: " + ex.Message); }
@@ -927,21 +914,8 @@ namespace PLSQLImportFull.Forms
             {
                 List<ConstraintInfo> list = new List<ConstraintInfo>();
                 foreach (ConstraintInfo c in checkedListEnableConstraints.CheckedItems) list.Add(c);
-
-                // MUDANÇA: Captura os erros
-                string errosConstraints;
-                int count = _constraintManager.EnableConstraints(list, out errosConstraints);
-
-                // MUDANÇA: Mostra o popup de aviso ou sucesso
-                if (!string.IsNullOrEmpty(errosConstraints))
-                {
-                    MessageBox.Show(errosConstraints, "Aviso: Falhas em Constraints", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-                else
-                {
-                    MessageBox.Show($"{count} habilitadas com sucesso.");
-                }
-
+                int count = _constraintManager.EnableConstraints(list);
+                MessageBox.Show($"{count} habilitadas.");
                 btnRefreshEnableConstraints_Click(sender, e);
             }
             catch (Exception ex) { MessageBox.Show("Erro: " + ex.Message); }
@@ -1178,56 +1152,80 @@ END;";
                     {
                         worker.ReportProgress(0, "Habilitando Constraints...");
                         var allConstraints = _constraintManager.GetAllConstraints(enabled: false);
-                        if (allConstraints.Count > 0)
-                        {
-                            // MUDANÇA: Captura e mostra o erro de forma segura usando o this.Invoke (pois estamos num Worker)
-                            string errosConstraints;
-                            _constraintManager.EnableConstraints(allConstraints, out errosConstraints);
-
-                            if (!string.IsNullOrEmpty(errosConstraints))
-                            {
-                                this.Invoke(new Action(() => {
-                                    MessageBox.Show(errosConstraints, "Aviso: Falhas em Constraints", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                }));
-                            }
-                        }
+                        if (allConstraints.Count > 0) _constraintManager.EnableConstraints(allConstraints);
                     }
 
                     if (doSequences)
                     {
                         worker.ReportProgress(0, "Resetando Sequences...");
                         _connectionManager.ExecuteNonQuery(@"
-create or replace procedure prc_wms_util_reset_sequence(gravar            in char default 'N',
+
+create or replace procedure prc_wms_util_reset_sequence(gravar           in char default 'N',
                                                         mostra_seq_maior in char default 'S') is
+
    ----------------------
    -- Versão 22.15.004
    ----------------------
+
    cursor sequence_cursor is
-      select us.sequence_name as seq_name, t.table_name, t.column_name, us.last_number, us.min_value
+      select us.sequence_name as seq_name,
+             t.table_name,
+             t.column_name,
+             us.last_number,
+             us.min_value
         from user_sequences us
-        left join ger_sequences t on upper(us.sequence_name) = upper(t.seq_name)
-       where upper(t.resetamanual) = 'N' and upper(us.cycle_flag) = 'N'
-         and us.sequence_name not in ('SEQ_GER_MENUS') and us.increment_by = 1
-         and t.table_name is not null and us.last_number > 1 order by t.seq_name;
+        left join ger_sequences t
+          on upper(us.sequence_name) = upper(t.seq_name)
+       where upper(t.resetamanual) = 'N'
+         and upper(us.cycle_flag) = 'N'
+         and us.sequence_name not in ('SEQ_GER_MENUS')
+         and us.increment_by = 1
+         and t.table_name is not null --#
+         and us.last_number > 1
+       order by t.seq_name;
 
    lin sequence_cursor%rowtype;
+
    val          number := 0;
    l_current    number := 0;
    l_difference number := 0;
 
-   procedure p_reg_seq(p_seq varchar2, p_tab varchar2, p_col varchar2) is
+   ---------------------------------------------------------
+   -- Procedure Interna para garantir o cadastro sem duplicidade
+   ---------------------------------------------------------
+   procedure p_reg_seq(p_seq varchar2,
+                       p_tab varchar2,
+                       p_col varchar2) is
    begin
       merge into ger_sequences t
-      using (select p_seq as seq, p_tab as tab, p_col as col from dual) orig
-      on (upper(t.seq_name) = upper(orig.seq))
+      using (select p_seq as seq,
+                    p_tab as tab,
+                    p_col as col
+               from dual) orig
+      on (upper(t.seq_name) = upper(orig.seq)) -- Verifica pelo NOME da sequence
       when matched then
-         update set t.table_name  = orig.tab, t.column_name = orig.col
+      -- Se já existe, garante que a tabela e coluna estão certas (opcional, mas recomendado)
+         update
+            set t.table_name  = orig.tab,
+                t.column_name = orig.col
       when not matched then
-         insert (seq_name, table_name, column_name, resetamanual)
-         values (orig.seq, orig.tab, orig.col, 'N');
+      -- Se não existe, insere
+         insert
+            (seq_name,
+             table_name,
+             column_name,
+             resetamanual)
+         values
+            (orig.seq,
+             orig.tab,
+             orig.col,
+             'N');
    end p_reg_seq;
 
 begin
+
+   -- 1. Executa a carga/garantia dos dados na tabela
+   -- ------------------------------------------------
    p_reg_seq('SEQ_COMPOSICAO_LINHAS_PEDIDOS', 'COMPOSICAO_LINHAS_PEDIDOS', 'ID');
    p_reg_seq('SEQ_WMS_ETIQ_LIN_PED_ERP', 'ETIQUETAS_LINHAS_PEDIDOS_ERP', 'ID');
    p_reg_seq('SEQ_GER_AVISOS', 'GER_AVISOS', 'GER_AVISO_ID');
@@ -1351,10 +1349,18 @@ begin
    p_reg_seq('SEQ_WMS_VOLUMES', 'WMS_VOLUMES', 'WMS_VOLUME_ID');
    p_reg_seq('SEQ_WMS_VOLUMES_DELETADOS', 'WMS_VOLUMES_DELETADOS', 'ID');
 
+   -- Commit das configurações
    commit;
 
    for lin in sequence_cursor
    loop
+   
+      dbms_output.put('Seq: ' || lin.seq_name || lpad(' ', 32 - length(lin.seq_name), ' ') --
+                      || ' Tab: ' || lin.table_name || lpad(' ', 32 - length(lin.table_name), ' ') --
+                      || ' Col: ' || lin.column_name ||
+                      lpad(' ', 32 - length(lin.column_name), ' ') --
+                      || ' Last_number: ' || lin.last_number || ' ');
+   
       execute immediate 'select nvl(max(t.' || lin.column_name || '),0) from ' || lin.table_name || ' t'
          into val;
       if lin.table_name = 'PEDIDOS' then
@@ -1369,30 +1375,47 @@ begin
             into val;
       end if;
    
-      if lin.last_number = (val + 1) or (val = 0 and lin.last_number <= 2) then
+      if lin.last_number = (val + 1) --
+         or (val = 0 and lin.last_number <= 2) --
+       then
+         dbms_output.put_line(lpad(' ', 10 - length(val), ' ') ||
+                              ' !!! IGNORADA!! Ultimo valor IGUAL: ' || (val + 1));
          continue;
       end if;
    
       if mostra_seq_maior = 'N' and lin.last_number > val then
+         dbms_output.put_line(lpad(' ', 10 - length(val), ' ') ||
+                              ' !!! IGNORADA!! Ultimo valor é MAIOR! Campo: ' || (val + 1) ||
+                              ' Seq: ' || lin.last_number);
          continue;
+      else
+         dbms_output.put_line(chr(13) || '*** Alterar para: ' || val || case when
+                              val >= lin.last_number then ' *** <<<<<< ***' else '' end);
       end if;
-      
       if gravar = 'S' then
+      
          execute immediate 'select ' || lin.seq_name || '.nextval from dual'
             into l_current;
+      
          l_difference := val - l_current;
+      
          if l_difference = 0 then
             continue;
          end if;
-         if lin.min_value = 1 and val  = 0 then
+      
+         if lin.min_value = 1 and val = 0 then
             l_difference := l_difference + 1;
          end if;
+      
          execute immediate 'alter sequence ' || lin.seq_name || ' increment by ' || l_difference;
+      
          execute immediate 'select ' || lin.seq_name || '.nextval from dual'
             into l_difference;
+      
          execute immediate 'alter sequence ' || lin.seq_name || ' increment by 1';
       end if;
    end loop;
+
 end prc_wms_util_reset_sequence;
 ");
                         _connectionManager.ExecuteNonQuery("BEGIN prc_wms_util_reset_sequence(gravar=>'S'); END;");
@@ -1445,6 +1468,7 @@ end prc_wms_util_reset_sequence;
             };
             worker.RunWorkerAsync();
         }
+
         private void UpdateTruncateList(List<TableInfo> tablesToShow)
         {
             checkedListTables.Items.Clear();
